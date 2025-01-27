@@ -266,13 +266,17 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       this.lNodeType
     );
 
-    this.dispatchEvent(newEditEvent(inserts));
-
     const newLNodeType = inserts.find(
       insert => (insert.node as Element).tagName === 'LNodeType'
     )?.node as Element;
 
     if (newLNodeType) this.addedLNode = newLNodeType.getAttribute('id') ?? '';
+
+    this.dispatchEvent(
+      newEditEvent(inserts, {
+        title: `Create LNodeType ${newLNodeType.getAttribute('id')}`,
+      })
+    );
   }
 
   reset() {
