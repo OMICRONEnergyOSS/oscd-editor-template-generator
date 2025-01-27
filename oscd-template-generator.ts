@@ -1,9 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-loop-func */
-/* eslint-disable no-nested-ternary */
-import { LitElement, html, css } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { state, query } from 'lit/decorators.js';
 
 import { ScopedElementsMixin } from '@open-wc/scoped-elements/lit-element.js';
@@ -331,6 +328,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       );
       --md-list-container-color: var(--oscd-base2);
       --md-fab-container-color: var(--oscd-secondary);
+      font-family: var(--oscd-theme-icon-font, 'Material Symbols Outlined');
     }
 
     .container {
