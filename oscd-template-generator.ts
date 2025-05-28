@@ -7,7 +7,11 @@ import { ScopedElementsMixin } from '@open-wc/scoped-elements/lit-element.js';
 
 import { newEditEvent } from '@openenergytools/open-scd-core';
 
-import { insertSelectedLNodeType, nsdToJson } from '@openenergytools/scl-lib';
+import {
+  insertSelectedLNodeType,
+  nsdToJson,
+  LNodeDescription,
+} from '@openenergytools/scl-lib';
 
 import { TreeGrid, TreeSelection } from '@openenergytools/tree-grid';
 
@@ -15,193 +19,51 @@ import { MdFab } from '@scopedelement/material-web/fab/MdFab.js';
 import { MdIcon } from '@scopedelement/material-web/icon/MdIcon.js';
 import { MdFilledSelect } from '@scopedelement/material-web/select/MdFilledSelect.js';
 import { MdSelectOption } from '@scopedelement/material-web/select/MdSelectOption.js';
+import { MdFilledSelect as MdOutlinedSelect } from '@scopedelement/material-web/select/MdOutlineSelect.js';
+import { MdOutlinedTextField } from '@scopedelement/material-web/textfield/MdOutlinedTextField.js';
+import { MdOutlinedButton } from '@scopedelement/material-web/button/outlined-button.js';
+import { MdDialog } from '@scopedelement/material-web/dialog/dialog.js';
+import { MdTextButton } from '@scopedelement/material-web/button/text-button.js';
+import { Snackbar } from './components/snackbar.js';
+
+import { cdClasses, lnClass74 } from './constants.js';
 
 let lastLNodeType = 'LPHD';
 let lastSelection = {};
 let lastFilter = '';
-
-const lnClass74 = [
-  'ANCR',
-  'ARCO',
-  'ARIS',
-  'ATCC',
-  'AVCO',
-  'CALH',
-  'CCGR',
-  'CILO',
-  'CPOW',
-  'CSWI',
-  'CSYN',
-  'FCNT',
-  'FCSD',
-  'FFIL',
-  'FLIM',
-  'FPID',
-  'FRMP',
-  'FSCC',
-  'FSCH',
-  'FSPT',
-  'FXOT',
-  'FXUT',
-  'GAPC',
-  'GGIO',
-  'GLOG',
-  'GSAL',
-  'IARC',
-  'IHMI',
-  'ISAF',
-  'ITCI',
-  'ITMI',
-  'ITPC',
-  'KFAN',
-  'KFIL',
-  'KPMP',
-  'KTNK',
-  'KVLV',
-  'LLN0',
-  'LPHD',
-  'LCCH',
-  'LGOS',
-  'LSVS',
-  'LTIM',
-  'LTMS',
-  'LTRK',
-  'MENV',
-  'MFLK',
-  'MFLW',
-  'MHAI',
-  'MHAN',
-  'MHET',
-  'MHYD',
-  'MMDC',
-  'MMET',
-  'MMTN',
-  'MMTR',
-  'MMXN',
-  'MMXU',
-  'MSQI',
-  'PDIF',
-  'PDIR',
-  'PDIS',
-  'PDOP',
-  'PDUP',
-  'PFRC',
-  'PHAR',
-  'PHIZ',
-  'PIOC',
-  'PMRI',
-  'PMSS',
-  'POPF',
-  'PPAM',
-  'PRTR',
-  'PSCH',
-  'PSDE',
-  'PSOF',
-  'PTDV',
-  'PTEF',
-  'PTHF',
-  'PTOC',
-  'PTOF',
-  'PTOV',
-  'PTRC',
-  'PTTR',
-  'PTUC',
-  'PTUF',
-  'PTUV',
-  'PUPF',
-  'PVOC',
-  'PVPH',
-  'PZSU',
-  'QFVR',
-  'QITR',
-  'QIUB',
-  'QVTR',
-  'QVUB',
-  'QVVR',
-  'RADR',
-  'RBDR',
-  'RBRF',
-  'RDIR',
-  'RDRE',
-  'RDRS',
-  'RFLO',
-  'RMXU',
-  'RPSB',
-  'RREC',
-  'RSYN',
-  'SARC',
-  'SCBR',
-  'SIMG',
-  'SIML',
-  'SLTC',
-  'SOPM',
-  'SPDC',
-  'SPRS',
-  'SPTR',
-  'SSWI',
-  'STMP',
-  'SVBR',
-  'TANG',
-  'TAXD',
-  'TCTR',
-  'TDST',
-  'TFLW',
-  'TFRQ',
-  'TGSN',
-  'THUM',
-  'TLVL',
-  'TMGF',
-  'TMVM',
-  'TPOS',
-  'TPRS',
-  'TRTN',
-  'TSND',
-  'TTMP',
-  'TTNS',
-  'TVBR',
-  'TVTR',
-  'TWPH',
-  'XCBR',
-  'XFUS',
-  'XSWI',
-  'YEFN',
-  'YLTC',
-  'YPSH',
-  'YPTR',
-  'ZAXN',
-  'ZBAT',
-  'ZBSH',
-  'ZCAB',
-  'ZCAP',
-  'ZCON',
-  'ZGEN',
-  'ZGIL',
-  'ZLIN',
-  'ZMOT',
-  'ZREA',
-  'ZRES',
-  'ZRRC',
-  'ZSAR',
-  'ZSCR',
-  'ZSMC',
-  'ZTCF',
-  'ZTCR',
-] as const;
 
 export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   static scopedElements = {
     'tree-grid': TreeGrid,
     'md-filled-select': MdFilledSelect,
     'md-select-option': MdSelectOption,
+    'md-outlined-select': MdOutlinedSelect,
     'md-fab': MdFab,
     'md-icon': MdIcon,
+    'md-outlined-button': MdOutlinedButton,
+    'md-dialog': MdDialog,
+    'md-outlined-text-field': MdOutlinedTextField,
+    'md-text-button': MdTextButton,
+    'oscd-snackbar': Snackbar,
   };
-
-  @state()
-  doc?: XMLDocument;
 
   @query('tree-grid')
   treeUI!: TreeGrid;
+
+  @query('md-filled-select')
+  lNodeTypeUI?: MdFilledSelect;
+
+  @query('md-dialog')
+  createDOdialog!: MdDialog;
+
+  @query('#cdc-type')
+  cdcType!: MdOutlinedSelect;
+
+  @query('#do-name')
+  doName!: MdOutlinedTextField;
+
+  @state()
+  doc?: XMLDocument;
 
   @state()
   get selection(): TreeSelection {
@@ -223,9 +85,6 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     this.treeUI.filter = filter;
   }
 
-  @query('md-filled-select')
-  lNodeTypeUI?: MdFilledSelect;
-
   @state()
   get lNodeType(): string {
     return this.lNodeTypeUI?.value || lastLNodeType;
@@ -239,6 +98,12 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
 
   @state()
   addedLNode = '';
+
+  @state()
+  snackbarMessage = '';
+
+  @state()
+  snackbarType: 'success' | 'error' = 'success';
 
   disconnectedCallback() {
     super.disconnectedCallback();
@@ -260,11 +125,10 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   saveTemplates() {
     if (!this.doc) return;
 
-    const inserts = insertSelectedLNodeType(
-      this.doc,
-      this.treeUI.selection,
-      this.lNodeType
-    );
+    const inserts = insertSelectedLNodeType(this.doc, this.treeUI.selection, {
+      class: this.lNodeType,
+      data: this.treeUI.tree as LNodeDescription,
+    });
 
     const newLNodeType = inserts.find(
       insert => (insert.node as Element).tagName === 'LNodeType'
@@ -288,26 +152,186 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     this.treeUI.requestUpdate();
   }
 
+  openDialog() {
+    this.createDOdialog.show();
+  }
+
+  closeDialog() {
+    if (this.cdcType) {
+      this.cdcType.errorText = '';
+      this.cdcType.error = false;
+      this.cdcType.reset();
+    }
+
+    if (this.doName) {
+      this.doName.errorText = '';
+      this.doName.error = false;
+      this.doName.value = '';
+    }
+
+    this.createDOdialog.close();
+  }
+
+  private async onAddDataObjectSubmit(e: Event): Promise<void> {
+    e.preventDefault();
+
+    const form = e.target as HTMLFormElement;
+
+    if (!this.validateForm()) return;
+
+    try {
+      this.createDataObject(
+        this.cdcType.value as (typeof cdClasses)[number],
+        this.doName.value
+      );
+
+      this.showNotification(
+        `Data Object '${this.doName.value}' created successfully.`,
+        'success'
+      );
+      this.closeDialog();
+      form.reset();
+    } catch (error) {
+      this.showNotification(
+        'Failed to create Data Object. Please try again.',
+        'error'
+      );
+    }
+  }
+
+  private validateForm(): boolean {
+    let isValid = true;
+
+    if (!this.cdcType?.value) {
+      this.cdcType.errorText = 'Please select a common data class.';
+      this.cdcType.error = true;
+      isValid = false;
+    } else {
+      this.cdcType.errorText = '';
+      this.cdcType.error = false;
+    }
+
+    if (!this.doName?.checkValidity()) {
+      this.doName.errorText = 'Not a valid DO name.';
+      this.doName.error = true;
+      isValid = false;
+    } else {
+      this.doName.errorText = '';
+      this.doName.error = false;
+    }
+
+    return isValid;
+  }
+
+  private createDataObject(
+    cdcType: (typeof cdClasses)[number],
+    doName: string
+  ): void {
+    const cdcChildren = nsdToJson(cdcType);
+
+    const cdcDescription = {
+      tagName: 'DataObject',
+      type: cdcType,
+      descID: '',
+      presCond: 'O',
+      children: cdcChildren,
+    };
+
+    Object.assign(this.treeUI.tree, {
+      [doName]: cdcDescription,
+    });
+    this.treeUI.requestUpdate();
+  }
+
+  /* eslint-disable class-methods-use-this */
+  private resetErrorText(e: Event): void {
+    const target = e.target as MdOutlinedTextField | MdOutlinedSelect;
+    if (target.errorText && target.checkValidity()) {
+      target.errorText = '';
+      target.error = false;
+    }
+  }
+
+  showNotification(message: string, type: 'success' | 'error'): void {
+    this.snackbarMessage = '';
+    setTimeout(() => {
+      this.snackbarMessage = message;
+      this.snackbarType = type;
+    }, 0);
+  }
+
   render() {
     return html`<div class="container">
-        <md-filled-select @input=${() => this.reset()}>
-          ${Array.from(lnClass74).map(
-            lNodeType =>
-              html`<md-select-option value=${lNodeType}
-                >${lNodeType}</md-select-option
-              >`
-          )}
-        </md-filled-select>
+        <div class="btn-wrapper">
+          <md-outlined-button @click=${this.openDialog}>
+            <md-icon slot="icon">add</md-icon>
+            Add Data Object
+          </md-outlined-button>
+          <md-filled-select @input=${this.reset}>
+            ${lnClass74.map(
+              lNodeType =>
+                html`<md-select-option value=${lNodeType}
+                  >${lNodeType}</md-select-option
+                >`
+            )}
+          </md-filled-select>
+        </div>
         <tree-grid></tree-grid>
       </div>
       ${this.doc
         ? html`<md-fab
             label="${this.addedLNode || 'Add Type'}"
-            @click=${() => this.saveTemplates()}
+            @click=${this.saveTemplates}
           >
             <md-icon slot="icon">${this.addedLNode ? 'done' : 'add'}</md-icon>
           </md-fab>`
-        : html``}`;
+        : html``}
+      <md-dialog @closed=${this.closeDialog}>
+        <div slot="headline">Add Data Object</div>
+        <form
+          slot="content"
+          id="add-data-object"
+          class="dialog-content"
+          novalidate
+          @submit=${this.onAddDataObjectSubmit}
+          @reset=${this.closeDialog}
+        >
+          <md-outlined-select
+            class="cdc-type"
+            label="Common Data Class"
+            required
+            id="cdc-type"
+            @input=${this.resetErrorText}
+          >
+            ${cdClasses.map(
+              (cdClass: (typeof cdClasses)[number]) =>
+                html`<md-select-option value=${cdClass}
+                  >${cdClass}</md-select-option
+                >`
+            )}
+          </md-outlined-select>
+          <md-outlined-text-field
+            label="Data Object Name"
+            id="do-name"
+            required
+            maxlength="12"
+            pattern="[A-Z][0-9A-Za-z]*"
+            @input=${this.resetErrorText}
+          ></md-outlined-text-field>
+        </form>
+        <div slot="actions">
+          <md-text-button form="add-data-object" type="reset"
+            >Close</md-text-button
+          >
+          <md-text-button form="add-data-object" type="submit"
+            >Add</md-text-button
+          >
+        </div>
+      </md-dialog>
+      <oscd-snackbar
+        .message=${this.snackbarMessage}
+        .type=${this.snackbarType}
+      ></oscd-snackbar>`;
   }
 
   static styles = css`
@@ -322,7 +346,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       --md-sys-color-on-primary: var(--oscd-base2);
       --md-sys-color-on-surface-variant: var(--oscd-base00);
       --md-menu-container-color: var(--oscd-base3);
-      font-family: var(--oscd-theme-text-font);
+      font-family: var(--oscd-theme-text-font, 'Roboto');
       --md-sys-color-surface-container-highest: var(--oscd-base2);
       --md-list-item-activated-background: rgb(
         from var(--oscd-primary) r g b / 0.38
@@ -332,11 +356,18 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       );
       --md-list-container-color: var(--oscd-base2);
       --md-fab-container-color: var(--oscd-secondary);
-      font-family: var(--oscd-theme-icon-font, 'Material Symbols Outlined');
+      --md-dialog-container-color: var(--oscd-base3);
+      --md-dialog-container-shape: 4px;
+      --md-text-button-container-shape: 4px;
     }
 
-    .container {
-      margin: 12px;
+    md-outlined-button,
+    md-text-button {
+      text-transform: uppercase;
+    }
+
+    md-icon {
+      font-family: var(--oscd-theme-icon-font, 'Material Symbols Outlined');
     }
 
     md-fab {
@@ -345,9 +376,20 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       right: 32px;
     }
 
-    md-filled-select {
-      position: absolute;
-      left: 300px;
+    .container {
+      margin: 12px;
+    }
+
+    .btn-wrapper {
+      display: flex;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .dialog-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
   `;
 }

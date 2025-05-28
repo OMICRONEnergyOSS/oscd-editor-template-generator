@@ -1,7 +1,9 @@
-import { fixture, expect, html } from '@open-wc/testing';
+import { fixture, expect, html, waitUntil } from '@open-wc/testing';
 import { restore, SinonSpy, spy } from 'sinon';
+import { Insert } from '@openenergytools/open-scd-core';
 
 import TemplateGenerator from './oscd-template-generator.js';
+import { lNodeSelection } from './oscd-template-generator.testfiles.js';
 
 customElements.define('template-generator', TemplateGenerator);
 
@@ -24,6 +26,176 @@ describe('TemplateGenerator', () => {
     expect(element).shadowDom.to.equalSnapshot();
   });
 
+  it('displays a button to create a new DO', () => {
+    expect(element.shadowRoot?.querySelector('md-outlined-button')).to.exist;
+    expect(
+      element.shadowRoot?.querySelector('md-outlined-button')
+    ).to.include.text('Add Data Object');
+  });
+
+  describe('dialog behavior', () => {
+    it('opens a dialog on "Add Data Object" button click', async () => {
+      expect(element.createDOdialog.open).to.be.false;
+
+      const button = element.shadowRoot?.querySelector(
+        'md-outlined-button'
+      ) as HTMLElement;
+      button.click();
+
+      await waitUntil(() => element.createDOdialog.open);
+      expect(element.createDOdialog.open).to.be.true;
+    });
+
+    it('clears inputs and closes the dialog on reset button click', async () => {
+      element.openDialog();
+      await waitUntil(() => element.createDOdialog.open);
+
+      element.cdcType.value = 'ACD';
+      element.doName.value = 'TestDO';
+
+      const closeButton = element.shadowRoot?.querySelector(
+        'md-text-button[type="reset"]'
+      ) as HTMLElement;
+      closeButton.click();
+
+      await waitUntil(() => !element.createDOdialog.open);
+      expect(element.cdcType).to.have.property('value', '');
+      expect(element.doName).to.have.property('value', '');
+      expect(element.createDOdialog.open).to.be.false;
+      element.closeDialog();
+    });
+
+    it('validates the form fields', async () => {
+      element.openDialog();
+      await waitUntil(() => element.createDOdialog.open);
+      expect(element.cdcType.error).to.be.false;
+      expect(element.doName.error).to.be.false;
+
+      const form = element.shadowRoot?.querySelector(
+        '#add-data-object'
+      ) as HTMLFormElement;
+      form.dispatchEvent(new Event('submit'));
+
+      expect(element.cdcType.error).to.be.true;
+      expect(element.cdcType.errorText).to.equal(
+        'Please select a common data class.'
+      );
+      expect(element.doName.error).to.be.true;
+      expect(element.doName.errorText).to.equal('Not a valid DO name.');
+      const doNameInput = element.shadowRoot?.querySelector(
+        '#do-name'
+      ) as HTMLInputElement;
+      doNameInput.value = 'ValidDOName';
+      doNameInput.dispatchEvent(new Event('input'));
+      expect(element.doName.errorText).to.equal('');
+    });
+
+    it('creates a new DO on form submit', async () => {
+      element.openDialog();
+      await waitUntil(() => element.createDOdialog.open);
+
+      const treeBefore = JSON.parse(JSON.stringify(element.treeUI.tree));
+
+      const doNameInput = element.shadowRoot?.querySelector(
+        '#do-name'
+      ) as HTMLInputElement;
+      doNameInput.value = 'TestDO';
+      doNameInput.dispatchEvent(new Event('input'));
+
+      const cdcTypeSelect = element.shadowRoot?.querySelector(
+        '#cdc-type'
+      ) as HTMLSelectElement;
+      cdcTypeSelect.value = 'ACD';
+      cdcTypeSelect.dispatchEvent(new Event('input'));
+
+      const form = element.shadowRoot?.querySelector(
+        '#add-data-object'
+      ) as HTMLFormElement;
+      form.dispatchEvent(new Event('submit'));
+
+      await element.updateComplete;
+
+      const treeAfter = JSON.parse(JSON.stringify(element.treeUI.tree));
+      expect(treeAfter).to.not.deep.equal(treeBefore);
+      expect(treeAfter.TestDO).to.have.property('type', 'ACD');
+      expect(treeAfter.TestDO).to.have.property('tagName', 'DataObject');
+      expect(treeAfter.TestDO).to.have.property('descID', '');
+      expect(treeAfter.TestDO).to.have.property('presCond', 'O');
+    });
+
+    it('displays a success notification when a Data Object is created', async () => {
+      element.openDialog();
+      await element.updateComplete;
+
+      const doNameInput = element.doName;
+      doNameInput.value = 'TestDO';
+      doNameInput.dispatchEvent(new Event('input'));
+
+      const cdcTypeSelect = element.cdcType;
+      cdcTypeSelect.value = 'ACD';
+      cdcTypeSelect.dispatchEvent(new Event('input'));
+
+      const form = element.shadowRoot?.querySelector(
+        '#add-data-object'
+      ) as HTMLFormElement;
+      form.dispatchEvent(new Event('submit'));
+
+      await waitUntil(() => {
+        const snackbar = element.shadowRoot?.querySelector('oscd-snackbar');
+        return (
+          snackbar &&
+          (snackbar as any).shadowRoot?.textContent?.includes(
+            "Data Object 'TestDO' created successfully."
+          )
+        );
+      });
+      const snackbar = element.shadowRoot?.querySelector(
+        'oscd-snackbar'
+      ) as HTMLElement & { message?: string; type?: string };
+      expect(snackbar).to.exist;
+      expect(snackbar.shadowRoot?.textContent).to.include(
+        "Data Object 'TestDO' created successfully."
+      );
+    });
+
+    it('shows an error notification if Data Object creation fails', async () => {
+      element.openDialog();
+      await waitUntil(() => element.createDOdialog.open);
+
+      element.doName.value = 'TestDO';
+      element.cdcType.value = 'ACD';
+
+      const originalCreateDataObject = element['createDataObject'];
+      element['createDataObject'] = () => {
+        throw new Error('fail');
+      };
+
+      const form = element.shadowRoot?.querySelector(
+        '#add-data-object'
+      ) as HTMLFormElement;
+      form.dispatchEvent(new Event('submit'));
+
+      await waitUntil(() => {
+        const snackbar = element.shadowRoot?.querySelector('oscd-snackbar');
+        return (
+          snackbar &&
+          (snackbar as any).shadowRoot?.textContent?.includes(
+            'Failed to create Data Object. Please try again.'
+          )
+        );
+      });
+      const snackbar = element.shadowRoot?.querySelector(
+        'oscd-snackbar'
+      ) as HTMLElement & { message?: string; type?: string };
+      expect(snackbar).to.exist;
+      expect(snackbar.shadowRoot?.textContent).to.include(
+        'Failed to create Data Object. Please try again.'
+      );
+
+      element['createDataObject'] = originalCreateDataObject;
+    });
+  });
+
   describe('given a loaded document', () => {
     let listener: SinonSpy;
     afterEach(restore);
@@ -37,8 +209,9 @@ describe('TemplateGenerator', () => {
       await element.updateComplete;
     });
 
-    it('displays an action button', () =>
-      expect(element.shadowRoot?.querySelector('md-fab')).to.exist);
+    it('displays an action button', () => {
+      expect(element.shadowRoot?.querySelector('md-fab')).to.exist;
+    });
 
     it('adds Templates on action button click', () => {
       (element.shadowRoot?.querySelector('md-fab') as HTMLElement).click();
@@ -145,5 +318,83 @@ describe('TemplateGenerator', () => {
         elms.filter((e: { tagName: string }) => e.tagName === 'EnumType')
       ).to.have.lengthOf(8);
     }).timeout(10000); // selecting 550 paths for a full LLN0 is rather slow.
+
+    it('validates DOType inserts and IDs for multiple custom Data Objects', async () => {
+      element.lNodeType = 'GGIO';
+      element.reset();
+      await element.lNodeTypeUI?.updateComplete;
+      await element.updateComplete;
+
+      expect(Object.keys(element.treeUI.tree)).to.have.lengthOf(38);
+
+      const dataObjects = [
+        { name: 'AnOut2', type: 'APC' },
+        { name: 'CntVal2', type: 'BCR' },
+        { name: 'DPCSO2', type: 'DPC' },
+        { name: 'ISCSO2', type: 'ISC' },
+        { name: 'InRef2', type: 'ORG' },
+        { name: 'SPCSO2', type: 'SPC' },
+        { name: 'Ind2', type: 'SPS' },
+      ];
+
+      await Promise.all(
+        dataObjects.map(async ({ name, type }) => {
+          element.openDialog();
+          await element.updateComplete;
+
+          const doNameInput = element.shadowRoot?.querySelector(
+            '#do-name'
+          ) as HTMLInputElement;
+          doNameInput.value = name;
+          doNameInput.dispatchEvent(new Event('input'));
+
+          const cdcTypeSelect = element.shadowRoot?.querySelector(
+            '#cdc-type'
+          ) as HTMLSelectElement;
+          cdcTypeSelect.value = type;
+          cdcTypeSelect.dispatchEvent(new Event('input'));
+
+          const form = element.shadowRoot?.querySelector(
+            '#add-data-object'
+          ) as HTMLFormElement;
+          form.dispatchEvent(new Event('submit'));
+
+          await element.updateComplete;
+          expect(element.treeUI.tree[name]).to.exist;
+          expect(element.treeUI.tree[name]).to.have.property('type', type);
+          expect(element.treeUI.tree[name]).to.have.property(
+            'tagName',
+            'DataObject'
+          );
+          expect(element.treeUI.tree[name]).to.have.property('descID', '');
+          expect(element.treeUI.tree[name]).to.have.property('presCond', 'O');
+        })
+      );
+
+      expect(Object.keys(element.treeUI.tree)).to.have.lengthOf(45);
+
+      element.treeUI.selection = lNodeSelection;
+      const addLNBtn = element.shadowRoot?.querySelector(
+        'md-fab'
+      ) as HTMLElement;
+      addLNBtn.click();
+      await element.updateComplete;
+
+      const inserts = listener.args[0][0].detail.edit;
+      const insertedDOs = inserts.filter(
+        (insert: Insert) => (insert.node as Element).tagName === 'DOType'
+      );
+      const expectedIds = [
+        'Beh$oscd$_',
+        ...dataObjects.map(({ name }) => `${name}$oscd$_`),
+      ];
+
+      insertedDOs.forEach((insert: Insert, idx: number) => {
+        const id = (insert.node as Element).getAttribute('id');
+        expect(id, `Insert ID at index ${idx} is incorrect`).to.include(
+          expectedIds[idx]
+        );
+      });
+    }).timeout(10000);
   });
 });

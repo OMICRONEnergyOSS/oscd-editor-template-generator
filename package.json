@@ -6,8 +6,8 @@
   "version": "0.0.0",
   "scripts": {
     "prepare": "gunzip -d tree.json.gz && npm run build",
-    "lint": "eslint --ext .ts,.html . --ignore-path .gitignore && prettier \"**/*.ts\" --check --ignore-path .gitignore",
-    "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore",
+    "lint": "eslint --ext .ts,.html . --ignore-path .gitignore --ignore-pattern \"**/*.spec.ts\" && prettier \"**/*.ts\" --check --ignore-path .gitignore",
+    "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore --ignore-pattern \"**/*.spec.ts\" && prettier \"**/*.ts\" --write --ignore-path .gitignore",
     "test": "npm run compile && wtr --coverage",
     "test:watch": "npm run compile && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch --coverage\"",
     "compile": "rimraf dist && tsc && cpy tree.json dist --no-overwrite",
@@ -15,18 +15,17 @@
     "start:build": "web-dev-server --root-dir dist --app-index index.html --open",
     "analyze": "cem analyze --litelement",
     "start": "npm run compile && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
-    "deploy": "npm run build && gh-pages --dist 'dist' --branch 'deploy'"
+    "deploy": "npm run build && gh-pages --dist dist --branch deploy"
   },
   "dependencies": {
+    "@open-wc/scoped-elements": "^3.0.5",
+    "@openenergytools/open-scd-core": "0.0.5",
+    "@openenergytools/scl-lib": "1.4.1",
     "@openenergytools/tree-grid": "1.0.1",
     "@scopedelement/material-web": "^3.6.2",
-    "@openenergytools/open-scd-core": "0.0.5",
-    "@open-wc/scoped-elements": "^3.0.5",
-    "@openenergytools/scl-lib":"1.2.0",
     "lit": "^3.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^11.1.2",
     "@babel/preset-env": "^7.16.4",
     "@custom-elements-manifest/analyzer": "^0.4.17",
     "@open-wc/building-rollup": "^2.0.2",
@@ -34,12 +33,13 @@
     "@open-wc/testing": "^4.0.0",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-node-resolve": "^13.0.6",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "@types/mocha": "^10.0.10",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "@web/dev-server": "^0.4.6",
-    "@web/rollup-plugin-import-meta-assets": "^1.0.7",
     "@web/dev-server-polyfill": "^1.0.4",
-    "@types/mocha": "^10.0.10",
+    "@web/rollup-plugin-import-meta-assets": "^1.0.7",
     "@web/test-runner": "^0.19.0",
     "babel-plugin-template-html-minifier": "^4.1.0",
     "concurrently": "^5.3.0",
@@ -106,8 +106,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "eslint --fix",
-      "prettier --write"
+      "npm run lint",
+      "npm run format"
     ]
   },
   "customElements": "custom-elements.json"
