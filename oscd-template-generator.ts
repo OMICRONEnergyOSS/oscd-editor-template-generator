@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { css, html, LitElement } from 'lit';
-import { state, query } from 'lit/decorators.js';
+import { property, state, query } from 'lit/decorators.js';
 
 import { ScopedElementsMixin } from '@open-wc/scoped-elements/lit-element.js';
 
@@ -23,8 +23,9 @@ import { MdFilledSelect as MdOutlinedSelect } from '@scopedelement/material-web/
 import { MdOutlinedTextField } from '@scopedelement/material-web/textfield/MdOutlinedTextField.js';
 import { MdOutlinedButton } from '@scopedelement/material-web/button/outlined-button.js';
 import { MdDialog } from '@scopedelement/material-web/dialog/dialog.js';
-import { MdTextButton } from '@scopedelement/material-web/button/text-button.js';
 import { Snackbar } from './components/snackbar.js';
+import { CreateDataObjectDialog } from './components/create-do-dialog.js';
+import { DescriptionDialog } from './components/description-dialog.js';
 
 import { cdClasses, lnClass74 } from './constants.js';
 
@@ -43,9 +44,13 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     'md-outlined-button': MdOutlinedButton,
     'md-dialog': MdDialog,
     'md-outlined-text-field': MdOutlinedTextField,
-    'md-text-button': MdTextButton,
     'oscd-snackbar': Snackbar,
+    'create-data-object-dialog': CreateDataObjectDialog,
+    'description-dialog': DescriptionDialog,
   };
+
+  @property({ attribute: false })
+  doc?: XMLDocument;
 
   @query('tree-grid')
   treeUI!: TreeGrid;
@@ -53,17 +58,11 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   @query('md-filled-select')
   lNodeTypeUI?: MdFilledSelect;
 
-  @query('md-dialog')
-  createDOdialog!: MdDialog;
+  @query('create-data-object-dialog')
+  createDOdialog!: CreateDataObjectDialog;
 
-  @query('#cdc-type')
-  cdcType!: MdOutlinedSelect;
-
-  @query('#do-name')
-  doName!: MdOutlinedTextField;
-
-  @state()
-  doc?: XMLDocument;
+  @query('description-dialog')
+  descriptionDialog!: DescriptionDialog;
 
   @state()
   get selection(): TreeSelection {
@@ -122,11 +121,12 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     this.selection = lastSelection;
   }
 
-  saveTemplates() {
+  saveTemplates(description: string) {
     if (!this.doc) return;
 
     const inserts = insertSelectedLNodeType(this.doc, this.treeUI.selection, {
       class: this.lNodeType,
+      ...(description !== undefined && { desc: description }),
       data: this.treeUI.tree as LNodeDescription,
     });
 
@@ -152,76 +152,21 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     this.treeUI.requestUpdate();
   }
 
-  openDialog() {
-    this.createDOdialog.show();
-  }
-
-  closeDialog() {
-    if (this.cdcType) {
-      this.cdcType.errorText = '';
-      this.cdcType.error = false;
-      this.cdcType.reset();
-    }
-
-    if (this.doName) {
-      this.doName.errorText = '';
-      this.doName.error = false;
-      this.doName.value = '';
-    }
-
-    this.createDOdialog.close();
-  }
-
-  private async onAddDataObjectSubmit(e: Event): Promise<void> {
-    e.preventDefault();
-
-    const form = e.target as HTMLFormElement;
-
-    if (!this.validateForm()) return;
-
+  private handleDOConfirm = (cdcType: string, doName: string) => {
+    if (!cdcType || !doName) return;
     try {
-      this.createDataObject(
-        this.cdcType.value as (typeof cdClasses)[number],
-        this.doName.value
-      );
-
+      this.createDataObject(cdcType as (typeof cdClasses)[number], doName);
       this.showNotification(
-        `Data Object '${this.doName.value}' created successfully.`,
+        `Data Object '${doName}' created successfully.`,
         'success'
       );
-      this.closeDialog();
-      form.reset();
     } catch (error) {
       this.showNotification(
         'Failed to create Data Object. Please try again.',
         'error'
       );
     }
-  }
-
-  private validateForm(): boolean {
-    let isValid = true;
-
-    if (!this.cdcType?.value) {
-      this.cdcType.errorText = 'Please select a common data class.';
-      this.cdcType.error = true;
-      isValid = false;
-    } else {
-      this.cdcType.errorText = '';
-      this.cdcType.error = false;
-    }
-
-    if (!this.doName?.checkValidity()) {
-      this.doName.errorText = 'Not a valid DO name.';
-      this.doName.error = true;
-      isValid = false;
-    } else {
-      this.doName.errorText = '';
-      this.doName.error = false;
-    }
-
-    return isValid;
-  }
+  };
 
   private createDataObject(
     cdcType: (typeof cdClasses)[number],
@@ -243,15 +188,6 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     this.treeUI.requestUpdate();
   }
 
-  /* eslint-disable class-methods-use-this */
-  private resetErrorText(e: Event): void {
-    const target = e.target as MdOutlinedTextField | MdOutlinedSelect;
-    if (target.errorText && target.checkValidity()) {
-      target.errorText = '';
-      target.error = false;
-    }
-  }
-
   showNotification(message: string, type: 'success' | 'error'): void {
     this.snackbarMessage = '';
     setTimeout(() => {
@@ -263,7 +199,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   render() {
     return html`<div class="container">
         <div class="btn-wrapper">
-          <md-outlined-button @click=${this.openDialog}>
+          <md-outlined-button @click=${() => this.createDOdialog.show()}>
             <md-icon slot="icon">add</md-icon>
             Add Data Object
           </md-outlined-button>
@@ -281,53 +217,19 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       ${this.doc
         ? html`<md-fab
             label="${this.addedLNode || 'Add Type'}"
-            @click=${this.saveTemplates}
+            @click=${() => this.descriptionDialog.show()}
           >
             <md-icon slot="icon">${this.addedLNode ? 'done' : 'add'}</md-icon>
           </md-fab>`
         : html``}
-      <md-dialog @closed=${this.closeDialog}>
-        <div slot="headline">Add Data Object</div>
-        <form
-          slot="content"
-          id="add-data-object"
-          class="dialog-content"
-          novalidate
-          @submit=${this.onAddDataObjectSubmit}
-          @reset=${this.closeDialog}
-        >
-          <md-outlined-select
-            class="cdc-type"
-            label="Common Data Class"
-            required
-            id="cdc-type"
-            @input=${this.resetErrorText}
-          >
-            ${cdClasses.map(
-              (cdClass: (typeof cdClasses)[number]) =>
-                html`<md-select-option value=${cdClass}
-                  >${cdClass}</md-select-option
-                >`
-            )}
-          </md-outlined-select>
-          <md-outlined-text-field
-            label="Data Object Name"
-            id="do-name"
-            required
-            maxlength="12"
-            pattern="[A-Z][0-9A-Za-z]*"
-            @input=${this.resetErrorText}
-          ></md-outlined-text-field>
-        </form>
-        <div slot="actions">
-          <md-text-button form="add-data-object" type="reset"
-            >Close</md-text-button
-          >
-          <md-text-button form="add-data-object" type="submit"
-            >Add</md-text-button
-          >
-        </div>
-      </md-dialog>
+      <create-data-object-dialog
+        .cdClasses=${cdClasses}
+        .onConfirm=${this.handleDOConfirm}
+      ></create-data-object-dialog>
+      <description-dialog
+        .onConfirm=${(description: string) => this.saveTemplates(description)}
+        .onCancel=${() => this.descriptionDialog.close()}
+      ></description-dialog>
       <oscd-snackbar
         .message=${this.snackbarMessage}
         .type=${this.snackbarType}
@@ -361,8 +263,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       --md-text-button-container-shape: 4px;
     }
 
-    md-outlined-button,
-    md-text-button {
+    md-outlined-button {
       text-transform: uppercase;
     }
 
@@ -383,12 +284,6 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     .btn-wrapper {
       display: flex;
       margin-bottom: 12px;
-      gap: 12px;
-    }
-
-    .dialog-content {
-      display: flex;
-      flex-direction: column;
       gap: 12px;
     }
   `;

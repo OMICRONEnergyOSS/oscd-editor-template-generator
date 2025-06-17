@@ -47,71 +47,74 @@ describe('TemplateGenerator', () => {
     });
 
     it('clears inputs and closes the dialog on reset button click', async () => {
-      element.openDialog();
+      const dialog = element.createDOdialog;
+      dialog.show();
       await waitUntil(() => element.createDOdialog.open);
 
-      element.cdcType.value = 'ACD';
-      element.doName.value = 'TestDO';
+      dialog.cdcType.value = 'ACD';
+      dialog.doName.value = 'TestDO';
 
-      const closeButton = element.shadowRoot?.querySelector(
-        'md-text-button[type="reset"]'
-      ) as HTMLElement;
-      closeButton.click();
+      const cancelButton = dialog.shadowRoot?.querySelector(
+        '#cancel-btn'
+      ) as HTMLButtonElement;
+      cancelButton.click();
 
-      await waitUntil(() => !element.createDOdialog.open);
-      expect(element.cdcType).to.have.property('value', '');
-      expect(element.doName).to.have.property('value', '');
-      expect(element.createDOdialog.open).to.be.false;
-      element.closeDialog();
+      await waitUntil(() => !dialog.open);
+      expect(dialog.cdcType).to.have.property('value', '');
+      expect(dialog.doName).to.have.property('value', '');
+      expect(dialog.open).to.be.false;
+      dialog.close();
     });
 
     it('validates the form fields', async () => {
-      element.openDialog();
-      await waitUntil(() => element.createDOdialog.open);
-      expect(element.cdcType.error).to.be.false;
-      expect(element.doName.error).to.be.false;
+      const dialog = element.createDOdialog;
+      dialog.show();
+      await waitUntil(() => dialog.open);
+      expect(dialog.cdcType.error).to.be.false;
+      expect(dialog.doName.error).to.be.false;
 
-      const form = element.shadowRoot?.querySelector(
-        '#add-data-object'
-      ) as HTMLFormElement;
-      form.dispatchEvent(new Event('submit'));
+      const confirmButton = dialog.shadowRoot?.querySelector(
+        '#confirm-btn'
+      ) as HTMLElement;
+      confirmButton.click();
 
-      expect(element.cdcType.error).to.be.true;
-      expect(element.cdcType.errorText).to.equal(
+      expect(dialog.cdcType.error).to.be.true;
+      expect(dialog.cdcType.errorText).to.equal(
         'Please select a common data class.'
       );
-      expect(element.doName.error).to.be.true;
-      expect(element.doName.errorText).to.equal('Not a valid DO name.');
-      const doNameInput = element.shadowRoot?.querySelector(
+      expect(dialog.doName.error).to.be.true;
+      expect(dialog.doName.errorText).to.equal('Not a valid DO name.');
+      const doNameInput = dialog.shadowRoot?.querySelector(
         '#do-name'
       ) as HTMLInputElement;
       doNameInput.value = 'ValidDOName';
       doNameInput.dispatchEvent(new Event('input'));
-      expect(element.doName.errorText).to.equal('');
+      expect(dialog.doName.errorText).to.equal('');
     });
 
     it('creates a new DO on form submit', async () => {
-      element.openDialog();
-      await waitUntil(() => element.createDOdialog.open);
+      const dialog = element.createDOdialog;
+      dialog.show();
+      await waitUntil(() => dialog.open);
 
       const treeBefore = JSON.parse(JSON.stringify(element.treeUI.tree));
 
-      const doNameInput = element.shadowRoot?.querySelector(
+      const doNameInput = dialog.shadowRoot?.querySelector(
         '#do-name'
       ) as HTMLInputElement;
       doNameInput.value = 'TestDO';
       doNameInput.dispatchEvent(new Event('input'));
 
-      const cdcTypeSelect = element.shadowRoot?.querySelector(
+      const cdcTypeSelect = dialog.shadowRoot?.querySelector(
         '#cdc-type'
       ) as HTMLSelectElement;
       cdcTypeSelect.value = 'ACD';
       cdcTypeSelect.dispatchEvent(new Event('input'));
 
-      const form = element.shadowRoot?.querySelector(
-        '#add-data-object'
-      ) as HTMLFormElement;
-      form.dispatchEvent(new Event('submit'));
+      const confirmButton = dialog.shadowRoot?.querySelector(
+        '#confirm-btn'
+      ) as HTMLElement;
+      confirmButton.click();
 
       await element.updateComplete;
 
@@ -124,21 +127,22 @@ describe('TemplateGenerator', () => {
     });
 
     it('displays a success notification when a Data Object is created', async () => {
-      element.openDialog();
+      const dialog = element.createDOdialog;
+      dialog.show();
       await element.updateComplete;
 
-      const doNameInput = element.doName;
+      const doNameInput = dialog.doName;
       doNameInput.value = 'TestDO';
       doNameInput.dispatchEvent(new Event('input'));
 
-      const cdcTypeSelect = element.cdcType;
+      const cdcTypeSelect = dialog.cdcType;
       cdcTypeSelect.value = 'ACD';
       cdcTypeSelect.dispatchEvent(new Event('input'));
 
-      const form = element.shadowRoot?.querySelector(
-        '#add-data-object'
-      ) as HTMLFormElement;
-      form.dispatchEvent(new Event('submit'));
+      const confirmButton = dialog.shadowRoot?.querySelector(
+        '#confirm-btn'
+      ) as HTMLElement;
+      confirmButton.click();
 
       await waitUntil(() => {
         const snackbar = element.shadowRoot?.querySelector('oscd-snackbar');
@@ -159,31 +163,37 @@ describe('TemplateGenerator', () => {
     });
 
     it('shows an error notification if Data Object creation fails', async () => {
-      element.openDialog();
-      await waitUntil(() => element.createDOdialog.open);
+      const dialog = element.createDOdialog;
+      dialog.show();
+      await waitUntil(() => dialog.open);
 
-      element.doName.value = 'TestDO';
-      element.cdcType.value = 'ACD';
+      dialog.doName.value = 'TestDO';
+      dialog.cdcType.value = 'ACD';
 
       const originalCreateDataObject = element['createDataObject'];
       element['createDataObject'] = () => {
         throw new Error('fail');
       };
 
-      const form = element.shadowRoot?.querySelector(
-        '#add-data-object'
-      ) as HTMLFormElement;
-      form.dispatchEvent(new Event('submit'));
+      const confirmButton = dialog.shadowRoot?.querySelector(
+        '#confirm-btn'
+      ) as HTMLElement;
+      confirmButton.click();
 
-      await waitUntil(() => {
-        const snackbar = element.shadowRoot?.querySelector('oscd-snackbar');
-        return (
-          snackbar &&
-          (snackbar as any).shadowRoot?.textContent?.includes(
-            'Failed to create Data Object. Please try again.'
-          )
-        );
-      });
+      // Wait up to 5 seconds for the snackbar to appear
+      await waitUntil(
+        () => {
+          const snackbar = element.shadowRoot?.querySelector('oscd-snackbar');
+          return (
+            snackbar &&
+            (snackbar as any).shadowRoot?.textContent?.includes(
+              'Failed to create Data Object. Please try again.'
+            )
+          );
+        },
+        undefined,
+        { timeout: 5000 }
+      );
       const snackbar = element.shadowRoot?.querySelector(
         'oscd-snackbar'
       ) as HTMLElement & { message?: string; type?: string };
@@ -213,9 +223,17 @@ describe('TemplateGenerator', () => {
       expect(element.shadowRoot?.querySelector('md-fab')).to.exist;
     });
 
-    it('adds Templates on action button click', () => {
+    it('adds Templates on action button click', async () => {
       (element.shadowRoot?.querySelector('md-fab') as HTMLElement).click();
+      const descriptionDialog = element.descriptionDialog;
+      descriptionDialog.show();
+      await descriptionDialog.updateComplete;
+      descriptionDialog.description.value = 'Test Description';
 
+      const confirmButton = descriptionDialog.shadowRoot?.querySelector(
+        '#confirm-button'
+      ) as HTMLElement;
+      confirmButton.click();
       /* expect five calls for
          - LPHD and its mandatory DOTypes
            - PhyHealth and its mandatory EnumType
@@ -234,9 +252,19 @@ describe('TemplateGenerator', () => {
       });
     });
 
-    it('adds missing DataTypeTemplates section on action button click', () => {
+    it('adds missing DataTypeTemplates section on action button click', async () => {
       element.doc?.querySelector('DataTypeTemplates')?.remove();
       (element.shadowRoot?.querySelector('md-fab') as HTMLElement).click();
+
+      const descriptionDialog = element.descriptionDialog;
+      descriptionDialog.show();
+      await descriptionDialog.updateComplete;
+      descriptionDialog.description.value = 'Test Description';
+
+      const confirmButton = descriptionDialog.shadowRoot?.querySelector(
+        '#confirm-button'
+      ) as HTMLElement;
+      confirmButton.click();
 
       // expect one more call for the DTT section
       const edits = listener.args[0][0].detail.edit;
@@ -269,6 +297,15 @@ describe('TemplateGenerator', () => {
       await selectAll(5);
 
       (element.shadowRoot?.querySelector('md-fab') as HTMLElement).click();
+      const descriptionDialog = element.descriptionDialog;
+      descriptionDialog.show();
+      await descriptionDialog.updateComplete;
+      descriptionDialog.description.value = 'Test Description';
+
+      const confirmButton = descriptionDialog.shadowRoot?.querySelector(
+        '#confirm-button'
+      ) as HTMLElement;
+      confirmButton.click();
 
       /* expect 30 calls for
         LNodeType LLN0
@@ -337,47 +374,53 @@ describe('TemplateGenerator', () => {
         { name: 'Ind2', type: 'SPS' },
       ];
 
-      await Promise.all(
-        dataObjects.map(async ({ name, type }) => {
-          element.openDialog();
-          await element.updateComplete;
+      for (const { name, type } of dataObjects) {
+        const dialog = element.createDOdialog;
+        dialog.show();
+        await waitUntil(() => dialog.open);
 
-          const doNameInput = element.shadowRoot?.querySelector(
-            '#do-name'
-          ) as HTMLInputElement;
-          doNameInput.value = name;
-          doNameInput.dispatchEvent(new Event('input'));
+        const doNameInput = dialog.shadowRoot?.querySelector(
+          '#do-name'
+        ) as HTMLInputElement;
+        doNameInput.value = name;
+        doNameInput.dispatchEvent(new Event('input'));
 
-          const cdcTypeSelect = element.shadowRoot?.querySelector(
-            '#cdc-type'
-          ) as HTMLSelectElement;
-          cdcTypeSelect.value = type;
-          cdcTypeSelect.dispatchEvent(new Event('input'));
+        const cdcTypeSelect = dialog.shadowRoot?.querySelector(
+          '#cdc-type'
+        ) as HTMLSelectElement;
+        cdcTypeSelect.value = type;
+        cdcTypeSelect.dispatchEvent(new Event('input'));
 
-          const form = element.shadowRoot?.querySelector(
-            '#add-data-object'
-          ) as HTMLFormElement;
-          form.dispatchEvent(new Event('submit'));
+        const confirmButton = dialog.shadowRoot?.querySelector(
+          '#confirm-btn'
+        ) as HTMLElement;
+        confirmButton.click();
 
-          await element.updateComplete;
-          expect(element.treeUI.tree[name]).to.exist;
-          expect(element.treeUI.tree[name]).to.have.property('type', type);
-          expect(element.treeUI.tree[name]).to.have.property(
-            'tagName',
-            'DataObject'
-          );
-          expect(element.treeUI.tree[name]).to.have.property('descID', '');
-          expect(element.treeUI.tree[name]).to.have.property('presCond', 'O');
-        })
-      );
+        await waitUntil(() => !dialog.open, undefined, { timeout: 2000 });
+        await element.updateComplete;
+        expect(element.treeUI.tree[name]).to.exist;
+        expect(element.treeUI.tree[name]).to.have.property('type', type);
+        expect(element.treeUI.tree[name]).to.have.property(
+          'tagName',
+          'DataObject'
+        );
+        expect(element.treeUI.tree[name]).to.have.property('descID', '');
+        expect(element.treeUI.tree[name]).to.have.property('presCond', 'O');
+        dialog.close();
+      }
 
       expect(Object.keys(element.treeUI.tree)).to.have.lengthOf(45);
 
       element.treeUI.selection = lNodeSelection;
-      const addLNBtn = element.shadowRoot?.querySelector(
-        'md-fab'
+      const descriptionDialog = element.descriptionDialog;
+      descriptionDialog.show();
+      await descriptionDialog.updateComplete;
+      descriptionDialog.description.value = 'Test Description';
+
+      const confirmButton = descriptionDialog.shadowRoot?.querySelector(
+        '#confirm-button'
       ) as HTMLElement;
-      addLNBtn.click();
+      confirmButton.click();
       await element.updateComplete;
 
       const inserts = listener.args[0][0].detail.edit;
