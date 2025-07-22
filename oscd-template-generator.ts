@@ -152,10 +152,18 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     this.treeUI.requestUpdate();
   }
 
-  private handleDOConfirm = (cdcType: string, doName: string) => {
+  private handleDOConfirm = (
+    cdcType: string,
+    doName: string,
+    namespace: string | null
+  ) => {
     if (!cdcType || !doName) return;
     try {
-      this.createDataObject(cdcType as (typeof cdClasses)[number], doName);
+      this.createDataObject(
+        cdcType as (typeof cdClasses)[number],
+        doName,
+        namespace
+      );
       this.showNotification(
         `Data Object '${doName}' created successfully.`,
         'success'
@@ -170,7 +178,8 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
 
   private createDataObject(
     cdcType: (typeof cdClasses)[number],
-    doName: string
+    doName: string,
+    namespace: string | null
   ): void {
     const cdcChildren = nsdToJson(cdcType);
 
@@ -181,6 +190,8 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       presCond: 'O',
       children: cdcChildren,
     };
+
+    // TODO: if namespace, do stuff
 
     Object.assign(this.treeUI.tree, {
       [doName]: cdcDescription,
@@ -224,6 +235,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
         : html``}
       <create-data-object-dialog
         .cdClasses=${cdClasses}
+        .tree=${this.treeUI?.tree}
         .onConfirm=${this.handleDOConfirm}
       ></create-data-object-dialog>
       <description-dialog
