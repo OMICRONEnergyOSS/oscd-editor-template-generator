@@ -182,6 +182,15 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     namespace: string | null
   ): void {
     const cdcChildren = nsdToJson(cdcType);
+    const namespaceAttributes = namespace
+      ? {
+          mandatory: true,
+          dataNs: {
+            mandatory: true,
+            val: namespace,
+          },
+        }
+      : {};
 
     const cdcDescription = {
       tagName: 'DataObject',
@@ -189,9 +198,8 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       descID: '',
       presCond: 'O',
       children: cdcChildren,
+      ...namespaceAttributes,
     };
-
-    // TODO: if namespace, do stuff
 
     Object.assign(this.treeUI.tree, {
       [doName]: cdcDescription,
