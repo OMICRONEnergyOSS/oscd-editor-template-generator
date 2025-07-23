@@ -23,6 +23,7 @@ import { MdFilledSelect as MdOutlinedSelect } from '@scopedelement/material-web/
 import { MdOutlinedTextField } from '@scopedelement/material-web/textfield/MdOutlinedTextField.js';
 import { MdOutlinedButton } from '@scopedelement/material-web/button/outlined-button.js';
 import { MdDialog } from '@scopedelement/material-web/dialog/dialog.js';
+import { CdcChildren } from '@openenergytools/scl-lib/dist/tDataTypeTemplates/nsdToJson.js';
 import { Snackbar } from './components/snackbar.js';
 import { CreateDataObjectDialog } from './components/create-do-dialog.js';
 import { DescriptionDialog } from './components/description-dialog.js';
@@ -181,16 +182,18 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     doName: string,
     namespace: string | null
   ): void {
-    const cdcChildren = nsdToJson(cdcType);
-    const namespaceAttributes = namespace
-      ? {
+    let cdcChildren = nsdToJson(cdcType) as CdcChildren;
+
+    if (namespace) {
+      cdcChildren = {
+        ...cdcChildren,
+        dataNs: {
+          ...cdcChildren?.dataNs,
           mandatory: true,
-          dataNs: {
-            mandatory: true,
-            val: namespace,
-          },
-        }
-      : {};
+          val: namespace,
+        },
+      };
+    }
 
     const cdcDescription = {
       tagName: 'DataObject',
@@ -198,7 +201,6 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       descID: '',
       presCond: 'O',
       children: cdcChildren,
-      ...namespaceAttributes,
     };
 
     Object.assign(this.treeUI.tree, {

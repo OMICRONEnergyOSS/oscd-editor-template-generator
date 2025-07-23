@@ -173,7 +173,7 @@ export class CreateDataObjectDialog extends ScopedElementsMixin(LitElement) {
     const status = this.getDONameStatus();
 
     if (status === DONameStatus.CustomNamespaceNeeded) {
-      if (!this.namespace.checkValidity()) {
+      if (!this.namespace.value) {
         this.namespace.errorText = 'Custom namespace required.';
         this.namespace.error = true;
         isValid = false;
@@ -201,9 +201,12 @@ export class CreateDataObjectDialog extends ScopedElementsMixin(LitElement) {
   private handleConfirm() {
     if (!this.validate()) return;
 
-    const namespace = this.isCustomNamespaceDisabled
-      ? null
-      : this.namespace.value;
+    const status = this.getDONameStatus();
+
+    const namespace =
+      status === DONameStatus.CustomNamespaceNeeded
+        ? this.namespace.value
+        : null;
     this.onConfirm?.(this.cdcType?.value, this.doName?.value, namespace);
     this.close();
   }

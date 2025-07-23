@@ -91,6 +91,8 @@ describe('TemplateGenerator', () => {
       cdcTypeSelect.value = 'ACD';
       cdcTypeSelect.dispatchEvent(new Event('input'));
 
+      dialog.namespace.value = 'custom-namespace';
+
       const confirmButton = dialog.shadowRoot?.querySelector(
         '#confirm-btn'
       ) as HTMLElement;
@@ -104,6 +106,8 @@ describe('TemplateGenerator', () => {
       expect(treeAfter.TestDO).to.have.property('tagName', 'DataObject');
       expect(treeAfter.TestDO).to.have.property('descID', '');
       expect(treeAfter.TestDO).to.have.property('presCond', 'O');
+      expect(treeAfter.TestDO.children.dataNs.val).to.equal('custom-namespace');
+      expect(treeAfter.TestDO.children.dataNs.mandatory).to.be.true;
     });
 
     it('displays a success notification when a Data Object is created', async () => {
@@ -118,6 +122,8 @@ describe('TemplateGenerator', () => {
       const cdcTypeSelect = dialog.cdcType;
       cdcTypeSelect.value = 'ACD';
       cdcTypeSelect.dispatchEvent(new Event('input'));
+
+      dialog.namespace.value = 'custom-namespace';
 
       const confirmButton = dialog.shadowRoot?.querySelector(
         '#confirm-btn'
@@ -149,6 +155,7 @@ describe('TemplateGenerator', () => {
 
       dialog.doName.value = 'TestDO';
       dialog.cdcType.value = 'ACD';
+      dialog.namespace.value = 'custom-namespace';
 
       const originalCreateDataObject = element['createDataObject'];
       element['createDataObject'] = () => {
