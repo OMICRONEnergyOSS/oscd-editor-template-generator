@@ -368,7 +368,7 @@ describe('TemplateGenerator', () => {
         { name: 'AnOut2', type: 'APC' },
         { name: 'CntVal2', type: 'BCR' },
         { name: 'DPCSO2', type: 'DPC' },
-        { name: 'ISCSO2', type: 'ISC' },
+        { name: 'ISCSO2', type: 'INC' },
         { name: 'InRef2', type: 'ORG' },
         { name: 'SPCSO2', type: 'SPC' },
         { name: 'Ind2', type: 'SPS' },
