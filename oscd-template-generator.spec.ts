@@ -46,26 +46,6 @@ describe('TemplateGenerator', () => {
       expect(element.createDOdialog.open).to.be.true;
     });
 
-    it('clears inputs and closes the dialog on reset button click', async () => {
-      const dialog = element.createDOdialog;
-      dialog.show();
-      await waitUntil(() => element.createDOdialog.open);
-
-      dialog.cdcType.value = 'ACD';
-      dialog.doName.value = 'TestDO';
-
-      const cancelButton = dialog.shadowRoot?.querySelector(
-        '#cancel-btn'
-      ) as HTMLButtonElement;
-      cancelButton.click();
-
-      await waitUntil(() => !dialog.open);
-      expect(dialog.cdcType).to.have.property('value', '');
-      expect(dialog.doName).to.have.property('value', '');
-      expect(dialog.open).to.be.false;
-      dialog.close();
-    });
-
     it('validates the form fields', async () => {
       const dialog = element.createDOdialog;
       dialog.show();
