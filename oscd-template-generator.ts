@@ -23,6 +23,7 @@ import { MdFilledSelect as MdOutlinedSelect } from '@scopedelement/material-web/
 import { MdOutlinedTextField } from '@scopedelement/material-web/textfield/MdOutlinedTextField.js';
 import { MdOutlinedButton } from '@scopedelement/material-web/button/outlined-button.js';
 import { MdDialog } from '@scopedelement/material-web/dialog/dialog.js';
+import { CdcChildren } from '@openenergytools/scl-lib/dist/tDataTypeTemplates/nsdToJson.js';
 import { Snackbar } from './components/snackbar.js';
 import { CreateDataObjectDialog } from './components/create-do-dialog.js';
 import { DescriptionDialog } from './components/description-dialog.js';
@@ -152,10 +153,18 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     this.treeUI.requestUpdate();
   }
 
-  private handleDOConfirm = (cdcType: string, doName: string) => {
+  private handleDOConfirm = (
+    cdcType: string,
+    doName: string,
+    namespace: string | null
+  ) => {
     if (!cdcType || !doName) return;
     try {
-      this.createDataObject(cdcType as (typeof cdClasses)[number], doName);
+      this.createDataObject(
+        cdcType as (typeof cdClasses)[number],
+        doName,
+        namespace
+      );
       this.showNotification(
         `Data Object '${doName}' created successfully.`,
         'success'
@@ -170,9 +179,21 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
 
   private createDataObject(
     cdcType: (typeof cdClasses)[number],
-    doName: string
+    doName: string,
+    namespace: string | null
   ): void {
-    const cdcChildren = nsdToJson(cdcType);
+    let cdcChildren = nsdToJson(cdcType) as CdcChildren;
+
+    if (namespace) {
+      cdcChildren = {
+        ...cdcChildren,
+        dataNs: {
+          ...cdcChildren?.dataNs,
+          mandatory: true,
+          val: namespace,
+        },
+      };
+    }
 
     const cdcDescription = {
       tagName: 'DataObject',
@@ -224,6 +245,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
         : html``}
       <create-data-object-dialog
         .cdClasses=${cdClasses}
+        .tree=${this.treeUI?.tree}
         .onConfirm=${this.handleDOConfirm}
       ></create-data-object-dialog>
       <description-dialog

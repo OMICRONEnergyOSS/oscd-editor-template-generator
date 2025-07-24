@@ -20,7 +20,7 @@
   "dependencies": {
     "@open-wc/scoped-elements": "^3.0.5",
     "@openenergytools/open-scd-core": "0.0.5",
-    "@openenergytools/scl-lib": "1.5.0",
+    "@openenergytools/scl-lib": "1.6.0",
     "@openenergytools/tree-grid": "1.0.1",
     "@scopedelement/material-web": "^3.6.2",
     "lit": "^3.0.0"
