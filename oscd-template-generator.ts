@@ -29,6 +29,7 @@ import { CreateDataObjectDialog } from './components/create-do-dialog.js';
 import { DescriptionDialog } from './components/description-dialog.js';
 
 import { cdClasses, lnClass74 } from './constants.js';
+import { NodeData, getSelectionByPath, processEnums } from './foundation.js';
 
 let lastLNodeType = 'LPHD';
 let lastSelection = {};
@@ -115,11 +116,15 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   async firstUpdated() {
     await this.treeUI.updateComplete;
     await this.lNodeTypeUI!.updateComplete;
+
     this.treeUI.tree = nsdToJson(lastLNodeType) as any;
     this.lNodeType = lastLNodeType;
     this.filter = lastFilter;
-    await this.treeUI.updateComplete;
     this.selection = lastSelection;
+
+    await this.treeUI.updateComplete;
+
+    this.autoSelectEnums();
   }
 
   saveTemplates(description: string) {
@@ -144,13 +149,16 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     );
   }
 
-  reset() {
+  async reset() {
     this.addedLNode = '';
     this.treeUI.tree = nsdToJson(this.lNodeType) as any;
     this.selection = {};
     this.filter = '';
     this.requestUpdate();
     this.treeUI.requestUpdate();
+
+    await this.treeUI.updateComplete;
+    this.autoSelectEnums();
   }
 
   private handleDOConfirm = (
@@ -217,6 +225,60 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     }, 0);
   }
 
+  private updateSelectionAtPath(
+    selection: TreeSelection,
+    path: string[],
+    newSelection: TreeSelection
+  ): TreeSelection {
+    if (path.length === 0) return newSelection;
+
+    const [currentKey, ...remainingPath] = path;
+    return {
+      ...selection,
+      [currentKey]: this.updateSelectionAtPath(
+        selection[currentKey] || {},
+        remainingPath,
+        newSelection
+      ),
+    };
+  }
+
+  private handleNodeSelected = (event: CustomEvent) => {
+    const { node, path } = event.detail;
+
+    const currentSelectionAtPath = getSelectionByPath(
+      this.treeUI.selection,
+      path
+    );
+
+    const selectionWithEnums = processEnums(
+      currentSelectionAtPath,
+      node as NodeData
+    );
+
+    this.treeUI.selection = this.updateSelectionAtPath(
+      this.treeUI.selection,
+      path,
+      selectionWithEnums
+    );
+
+    this.treeUI.requestUpdate();
+  };
+
+  private autoSelectEnums(): void {
+    const tree = this.treeUI.tree as Record<string, NodeData>;
+    const newSelection = { ...this.treeUI.selection };
+
+    for (const [key, dataObject] of Object.entries(tree)) {
+      if (newSelection[key]) {
+        newSelection[key] = processEnums(newSelection[key], dataObject);
+      }
+    }
+
+    this.treeUI.selection = newSelection;
+    this.treeUI.requestUpdate();
+  }
+
   render() {
     return html`<div class="container">
         <div class="btn-wrapper">
@@ -233,7 +295,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
             )}
           </md-filled-select>
         </div>
-        <tree-grid></tree-grid>
+        <tree-grid @node-selected=${this.handleNodeSelected}></tree-grid>
       </div>
       ${this.doc
         ? html`<md-fab

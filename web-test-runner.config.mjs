@@ -12,6 +12,17 @@ export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
     exportConditions: ['browser', 'development'],
   },
 
+  /** Coverage configuration */
+  coverageConfig: {
+    exclude: [
+      '**/node_modules/**',
+      '**/*.spec.js',
+      '**/*.test.js',
+      '**/constants.js',
+      '**/*.testfiles.js',
+    ],
+  },
+
   /** Filter out lit dev mode logs */
   filterBrowserLogs(log) {
     for (const arg of log.args) {
@@ -26,7 +37,7 @@ export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
     polyfill({
       scopedCustomElementRegistry: true,
     }),
-  ]
+  ],
 
   /** Compile JS for older browsers. Requires @web/dev-server-esbuild plugin */
   // esbuildTarget: 'auto',
