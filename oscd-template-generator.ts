@@ -27,6 +27,7 @@ import { CdcChildren } from '@openenergytools/scl-lib/dist/tDataTypeTemplates/ns
 import { Snackbar } from './components/snackbar.js';
 import { CreateDataObjectDialog } from './components/create-do-dialog.js';
 import { DescriptionDialog } from './components/description-dialog.js';
+import { PreviewDialog } from './components/preview-dialog.js';
 
 import { cdClasses, lnClass74 } from './constants.js';
 import { NodeData, getSelectionByPath, processEnums } from './foundation.js';
@@ -49,6 +50,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     'oscd-snackbar': Snackbar,
     'create-data-object-dialog': CreateDataObjectDialog,
     'description-dialog': DescriptionDialog,
+    'preview-dialog': PreviewDialog,
   };
 
   @property({ attribute: false })
@@ -65,6 +67,9 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
 
   @query('description-dialog')
   descriptionDialog!: DescriptionDialog;
+
+  @query('preview-dialog')
+  previewDialog!: PreviewDialog;
 
   @state()
   get selection(): TreeSelection {
@@ -225,6 +230,11 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     }, 0);
   }
 
+  private showPreview(): void {
+    this.previewDialog.selection = this.treeUI.selection;
+    this.previewDialog.show();
+  }
+
   private updateSelectionAtPath(
     selection: TreeSelection,
     path: string[],
@@ -298,12 +308,17 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
         <tree-grid @node-selected=${this.handleNodeSelected}></tree-grid>
       </div>
       ${this.doc
-        ? html`<md-fab
-            label="${this.addedLNode || 'Add Type'}"
-            @click=${() => this.descriptionDialog.show()}
-          >
-            <md-icon slot="icon">${this.addedLNode ? 'done' : 'add'}</md-icon>
-          </md-fab>`
+        ? html`<div class="fab-wrapper">
+            <md-fab @click=${() => this.showPreview()} title="Preview">
+              <md-icon slot="icon">preview</md-icon>
+            </md-fab>
+            <md-fab
+              label="${this.addedLNode || 'Add Type'}"
+              @click=${() => this.descriptionDialog.show()}
+            >
+              <md-icon slot="icon">${this.addedLNode ? 'done' : 'add'}</md-icon>
+            </md-fab>
+          </div>`
         : html``}
       <create-data-object-dialog
         .cdClasses=${cdClasses}
@@ -314,6 +329,10 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
         .onConfirm=${(description: string) => this.saveTemplates(description)}
         .onCancel=${() => this.descriptionDialog.close()}
       ></description-dialog>
+      <preview-dialog
+        .tree=${this.treeUI?.tree}
+        .lNodeType=${this.lNodeType}
+      ></preview-dialog>
       <oscd-snackbar
         .message=${this.snackbarMessage}
         .type=${this.snackbarType}
@@ -355,10 +374,12 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       font-family: var(--oscd-theme-icon-font, 'Material Symbols Outlined');
     }
 
-    md-fab {
+    .fab-wrapper {
       position: fixed;
       bottom: 32px;
       right: 32px;
+      display: flex;
+      gap: 16px;
     }
 
     .container {

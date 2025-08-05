@@ -106,3 +106,31 @@ export function processEnums(
 
   return newSel;
 }
+
+function formatXml(xml: string): string {
+  let formatted = '';
+  let indent = '';
+  const tab = '\t';
+  xml.split(/>\s*</).forEach(node => {
+    if (node.match(/^\/\w/)) indent = indent.substring(tab.length);
+    formatted += `${indent}<${node}>\r\n`;
+    if (node.match(/^<?\w[^>]*[^/]$/)) indent += tab;
+  });
+  return formatted.substring(1, formatted.length - 3);
+}
+
+export function serializeAndFormat(doc: XMLDocument): string {
+  const serializer = new XMLSerializer();
+  const xmlString = serializer.serializeToString(doc);
+  return formatXml(xmlString);
+}
+
+export function createBaseSCLDoc(): XMLDocument {
+  return new DOMParser().parseFromString(
+    `<?xml version="1.0" encoding="UTF-8"?>
+      <SCL xmlns="http://www.iec.ch/61850/2003/SCL" version="2007" revision="B" release="5">
+        <Header id="LNodeTypePreview"/>
+      </SCL>`,
+    'application/xml'
+  );
+}

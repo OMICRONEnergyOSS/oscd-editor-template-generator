@@ -1,5 +1,9 @@
 import { expect } from '@open-wc/testing';
-import { getSelectionByPath, processEnums } from './foundation.js';
+import {
+  getSelectionByPath,
+  processEnums,
+  serializeAndFormat,
+} from './foundation.js';
 
 describe('foundation.js', () => {
   describe('getSelectionByPath', () => {
@@ -88,6 +92,32 @@ describe('foundation.js', () => {
       const result = processEnums(selection, node);
 
       expect(result.parent.child).to.have.property('deepEnum');
+    });
+  });
+
+  describe('serializeAndFormat', () => {
+    const doc = new DOMParser().parseFromString(
+      `<?xml version="1.0" encoding="UTF-8"?>
+      <SCL xmlns="http://www.iec.ch/61850/2003/SCL" version="2007" revision="B" release="5">
+        <Header id="LNodeTypePreview"/>
+        <DataTypeTemplates>
+          <LNodeType lnClass="LPHD" id="LPHD$oscd$_f79cbe3f4e9088ea"/>
+        </DataTypeTemplates>
+      </SCL>`,
+      'application/xml'
+    );
+
+    it('should serialize and format an XML document', () => {
+      const result = serializeAndFormat(doc);
+      expect(result).to.match(/^<\?xml version="1.0" encoding="UTF-8"\?>/);
+      expect(result).to.match(/<SCL[\s\S]*>/);
+      expect(result).to.match(/^\t<Header id="LNodeTypePreview"\/>/m);
+      expect(result).to.match(/^\t<DataTypeTemplates>/m);
+      expect(result).to.match(
+        /^\t\t<LNodeType lnClass="LPHD" id="LPHD\$oscd\$_f79cbe3f4e9088ea"\/>/m
+      );
+      expect(result).to.match(/^\t<\/DataTypeTemplates>/m);
+      expect(result).to.match(/^<\/SCL>$/m);
     });
   });
 });
