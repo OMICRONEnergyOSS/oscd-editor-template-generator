@@ -9,14 +9,19 @@ import { MdOutlinedTextField } from '@scopedelement/material-web/textfield/MdOut
 import { MdDialog } from '@scopedelement/material-web/dialog/dialog.js';
 import { MdTextButton } from '@scopedelement/material-web/button/text-button.js';
 import { debounce } from '../utils/debounce.js';
+import { cdClasses } from '../constants.js';
 
-// eslint-disable-next-line no-shadow
 enum DONameStatus {
   Ok = 'Ok',
   Taken = 'Taken',
   InvalidCDC = 'InvalidCDC',
   CustomNamespaceNeeded = 'CustomNamespaceNeeded',
 }
+
+type NodeData = TreeNode & {
+  presCond?: string;
+  type?: (typeof cdClasses)[number];
+};
 
 const firstTextBlockRegExp = /[A-Za-z]+/;
 
@@ -33,13 +38,13 @@ export class CreateDataObjectDialog extends ScopedElementsMixin(LitElement) {
   cdClasses: string[] = [];
 
   @property()
-  tree: Partial<Record<string, TreeNode>> = {};
+  tree: Partial<Record<string, NodeData>> = {};
 
   @property({ type: Function })
   onConfirm?: (
     cdcType: string,
     doName: string,
-    namespace: string | null
+    namespace: string | null,
   ) => void;
 
   @query('md-dialog')
@@ -92,11 +97,16 @@ export class CreateDataObjectDialog extends ScopedElementsMixin(LitElement) {
     }
 
     const multiTree = Object.keys(this.tree)
-      .filter(key => (this.tree[key] as any).presCond === 'Omulti')
-      .reduce((acc, key) => {
-        acc[key] = this.tree[key];
-        return acc;
-      }, {} as any);
+      .filter(key => this.tree[key]?.presCond === 'Omulti')
+      .reduce(
+        (acc, key) => {
+          if (this.tree[key]) {
+            acc[key] = this.tree[key];
+          }
+          return acc;
+        },
+        {} as Record<string, NodeData>,
+      );
 
     const firstTextBlockMatch = doNameValue.match(firstTextBlockRegExp);
 
@@ -199,7 +209,9 @@ export class CreateDataObjectDialog extends ScopedElementsMixin(LitElement) {
   }
 
   private handleConfirm() {
-    if (!this.validate()) return;
+    if (!this.validate()) {
+      return;
+    }
 
     const status = this.getDONameStatus();
 
@@ -230,7 +242,7 @@ export class CreateDataObjectDialog extends ScopedElementsMixin(LitElement) {
               cdClass =>
                 html`<md-select-option value=${cdClass}
                   >${cdClass}</md-select-option
-                >`
+                >`,
             )}
           </md-outlined-select>
           <md-outlined-text-field

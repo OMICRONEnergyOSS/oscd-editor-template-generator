@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect, fixture, html, waitUntil } from '@open-wc/testing';
 import { SinonSpy, spy } from 'sinon';
 import { CreateDataObjectDialog } from './create-do-dialog.js';
@@ -29,15 +30,22 @@ describe('CreateDataObjectDialog', () => {
   beforeEach(async () => {
     confirmSpy = spy();
 
-    element = await fixture(html`<create-data-object-dialog
-      .cdClasses=${cdClasses}
-      .tree=${tree}
-      .onConfirm=${confirmSpy}
-    >
-    </create-data-object-dialog>`);
+    element = await fixture(
+      html`<create-data-object-dialog
+        .cdClasses=${cdClasses}
+        .tree=${tree}
+        .onConfirm=${confirmSpy}
+      >
+      </create-data-object-dialog>`,
+    );
 
-    confirmButton = element.shadowRoot?.querySelector('#confirm-btn')!;
-    cancelButton = element.shadowRoot?.querySelector('#cancel-btn')!;
+    const cnfBtn = element.shadowRoot?.querySelector('#confirm-btn');
+    const cnclBtn = element.shadowRoot?.querySelector('#cancel-btn');
+    if (!cnfBtn || !cnclBtn) {
+      throw new Error('Confirm or Cancel button not found in shadowRoot');
+    }
+    confirmButton = cnfBtn as HTMLButtonElement;
+    cancelButton = cnclBtn as HTMLButtonElement;
   });
 
   it('should call onConfirm for valid form', () => {
@@ -86,7 +94,7 @@ describe('CreateDataObjectDialog', () => {
       expect(confirmSpy.callCount).to.equal(0);
       expect(element.cdcType.error).to.be.true;
       expect(element.cdcType.errorText).to.equal(
-        'CDC type invalid for this DO'
+        'CDC type invalid for this DO',
       );
     });
 
@@ -100,7 +108,7 @@ describe('CreateDataObjectDialog', () => {
       expect(confirmSpy.callCount).to.equal(0);
       expect(element.namespace.error).to.be.true;
       expect(element.namespace.errorText).to.equal(
-        'Custom namespace required.'
+        'Custom namespace required.',
       );
     });
   });

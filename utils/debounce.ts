@@ -1,7 +1,10 @@
-export const debounce = (fn: Function, delay: number) => {
+export const debounce = <T extends (...args: unknown[]) => unknown>(
+  fn: T,
+  delay: number,
+) => {
   let timeoutId: number | undefined;
 
-  return (...args: any[]) => {
+  return (...args: Parameters<T>): void => {
     clearTimeout(timeoutId);
 
     timeoutId = window.setTimeout(() => {

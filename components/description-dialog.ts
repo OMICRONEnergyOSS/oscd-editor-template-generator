@@ -68,7 +68,9 @@ export class DescriptionDialog extends ScopedElementsMixin(LitElement) {
   }
 
   private handleConfirm() {
-    if (!this.validate()) return;
+    if (!this.validate()) {
+      return;
+    }
     this.onConfirm(this.description.value);
     this.close();
   }

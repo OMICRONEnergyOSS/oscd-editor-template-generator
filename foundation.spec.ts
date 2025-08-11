@@ -104,7 +104,7 @@ describe('foundation.js', () => {
           <LNodeType lnClass="LPHD" id="LPHD$oscd$_f79cbe3f4e9088ea"/>
         </DataTypeTemplates>
       </SCL>`,
-      'application/xml'
+      'application/xml',
     );
 
     it('should serialize and format an XML document', () => {
@@ -114,7 +114,7 @@ describe('foundation.js', () => {
       expect(result).to.match(/^\t<Header id="LNodeTypePreview"\/>/m);
       expect(result).to.match(/^\t<DataTypeTemplates>/m);
       expect(result).to.match(
-        /^\t\t<LNodeType lnClass="LPHD" id="LPHD\$oscd\$_f79cbe3f4e9088ea"\/>/m
+        /^\t\t<LNodeType lnClass="LPHD" id="LPHD\$oscd\$_f79cbe3f4e9088ea"\/>/m,
       );
       expect(result).to.match(/^\t<\/DataTypeTemplates>/m);
       expect(result).to.match(/^<\/SCL>$/m);

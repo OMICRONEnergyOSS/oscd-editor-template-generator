@@ -1,0 +1,1092 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "constants.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "cdClasses",
+          "type": {
+            "text": "[\n  'ACD',\n  'ACT',\n  'APC',\n  'ASG',\n  'BAC',\n  'BCR',\n  'BSC',\n  'CMV',\n  'DEL',\n  'DPC',\n  'DPL',\n  'HDEL',\n  'HMV',\n  'HST',\n  'HWYE',\n  'INC',\n  'INS',\n  'ISC',\n  'LPL',\n  'MV',\n  'ORG',\n  'ORS',\n  'SAV',\n  'SEC',\n  'SEQ',\n  'SPC',\n  'SPG',\n  'SPS',\n  'TCS',\n  'TSG',\n  'VSG',\n  'VSS',\n  'WYE',\n]"
+          },
+          "default": "[ 'ACD', 'ACT', 'APC', 'ASG', 'BAC', 'BCR', 'BSC', 'CMV', 'DEL', 'DPC', 'DPL', 'HDEL', 'HMV', 'HST', 'HWYE', 'INC', 'INS', 'ISC', 'LPL', 'MV', 'ORG', 'ORS', 'SAV', 'SEC', 'SEQ', 'SPC', 'SPG', 'SPS', 'TCS', 'TSG', 'VSG', 'VSS', 'WYE', ]"
+        },
+        {
+          "kind": "variable",
+          "name": "lnClass74",
+          "type": {
+            "text": "[\n  'ANCR',\n  'ARCO',\n  'ARIS',\n  'ATCC',\n  'AVCO',\n  'CALH',\n  'CCGR',\n  'CILO',\n  'CPOW',\n  'CSWI',\n  'CSYN',\n  'FCNT',\n  'FCSD',\n  'FFIL',\n  'FLIM',\n  'FPID',\n  'FRMP',\n  'FSCC',\n  'FSCH',\n  'FSPT',\n  'FXOT',\n  'FXUT',\n  'GAPC',\n  'GGIO',\n  'GLOG',\n  'GSAL',\n  'IARC',\n  'IHMI',\n  'ISAF',\n  'ITCI',\n  'ITMI',\n  'ITPC',\n  'KFAN',\n  'KFIL',\n  'KPMP',\n  'KTNK',\n  'KVLV',\n  'LLN0',\n  'LPHD',\n  'LCCH',\n  'LGOS',\n  'LSVS',\n  'LTIM',\n  'LTMS',\n  'LTRK',\n  'MENV',\n  'MFLK',\n  'MFLW',\n  'MHAI',\n  'MHAN',\n  'MHET',\n  'MHYD',\n  'MMDC',\n  'MMET',\n  'MMTN',\n  'MMTR',\n  'MMXN',\n  'MMXU',\n  'MSQI',\n  'PDIF',\n  'PDIR',\n  'PDIS',\n  'PDOP',\n  'PDUP',\n  'PFRC',\n  'PHAR',\n  'PHIZ',\n  'PIOC',\n  'PMRI',\n  'PMSS',\n  'POPF',\n  'PPAM',\n  'PRTR',\n  'PSCH',\n  'PSDE',\n  'PSOF',\n  'PTDV',\n  'PTEF',\n  'PTHF',\n  'PTOC',\n  'PTOF',\n  'PTOV',\n  'PTRC',\n  'PTTR',\n  'PTUC',\n  'PTUF',\n  'PTUV',\n  'PUPF',\n  'PVOC',\n  'PVPH',\n  'PZSU',\n  'QFVR',\n  'QITR',\n  'QIUB',\n  'QVTR',\n  'QVUB',\n  'QVVR',\n  'RADR',\n  'RBDR',\n  'RBRF',\n  'RDIR',\n  'RDRE',\n  'RDRS',\n  'RFLO',\n  'RMXU',\n  'RPSB',\n  'RREC',\n  'RSYN',\n  'SARC',\n  'SCBR',\n  'SIMG',\n  'SIML',\n  'SLTC',\n  'SOPM',\n  'SPDC',\n  'SPRS',\n  'SPTR',\n  'SSWI',\n  'STMP',\n  'SVBR',\n  'TANG',\n  'TAXD',\n  'TCTR',\n  'TDST',\n  'TFLW',\n  'TFRQ',\n  'TGSN',\n  'THUM',\n  'TLVL',\n  'TMGF',\n  'TMVM',\n  'TPOS',\n  'TPRS',\n  'TRTN',\n  'TSND',\n  'TTMP',\n  'TTNS',\n  'TVBR',\n  'TVTR',\n  'TWPH',\n  'XCBR',\n  'XFUS',\n  'XSWI',\n  'YEFN',\n  'YLTC',\n  'YPSH',\n  'YPTR',\n  'ZAXN',\n  'ZBAT',\n  'ZBSH',\n  'ZCAB',\n  'ZCAP',\n  'ZCON',\n  'ZGEN',\n  'ZGIL',\n  'ZLIN',\n  'ZMOT',\n  'ZREA',\n  'ZRES',\n  'ZRRC',\n  'ZSAR',\n  'ZSCR',\n  'ZSMC',\n  'ZTCF',\n  'ZTCR',\n]"
+          },
+          "default": "[ 'ANCR', 'ARCO', 'ARIS', 'ATCC', 'AVCO', 'CALH', 'CCGR', 'CILO', 'CPOW', 'CSWI', 'CSYN', 'FCNT', 'FCSD', 'FFIL', 'FLIM', 'FPID', 'FRMP', 'FSCC', 'FSCH', 'FSPT', 'FXOT', 'FXUT', 'GAPC', 'GGIO', 'GLOG', 'GSAL', 'IARC', 'IHMI', 'ISAF', 'ITCI', 'ITMI', 'ITPC', 'KFAN', 'KFIL', 'KPMP', 'KTNK', 'KVLV', 'LLN0', 'LPHD', 'LCCH', 'LGOS', 'LSVS', 'LTIM', 'LTMS', 'LTRK', 'MENV', 'MFLK', 'MFLW', 'MHAI', 'MHAN', 'MHET', 'MHYD', 'MMDC', 'MMET', 'MMTN', 'MMTR', 'MMXN', 'MMXU', 'MSQI', 'PDIF', 'PDIR', 'PDIS', 'PDOP', 'PDUP', 'PFRC', 'PHAR', 'PHIZ', 'PIOC', 'PMRI', 'PMSS', 'POPF', 'PPAM', 'PRTR', 'PSCH', 'PSDE', 'PSOF', 'PTDV', 'PTEF', 'PTHF', 'PTOC', 'PTOF', 'PTOV', 'PTRC', 'PTTR', 'PTUC', 'PTUF', 'PTUV', 'PUPF', 'PVOC', 'PVPH', 'PZSU', 'QFVR', 'QITR', 'QIUB', 'QVTR', 'QVUB', 'QVVR', 'RADR', 'RBDR', 'RBRF', 'RDIR', 'RDRE', 'RDRS', 'RFLO', 'RMXU', 'RPSB', 'RREC', 'RSYN', 'SARC', 'SCBR', 'SIMG', 'SIML', 'SLTC', 'SOPM', 'SPDC', 'SPRS', 'SPTR', 'SSWI', 'STMP', 'SVBR', 'TANG', 'TAXD', 'TCTR', 'TDST', 'TFLW', 'TFRQ', 'TGSN', 'THUM', 'TLVL', 'TMGF', 'TMVM', 'TPOS', 'TPRS', 'TRTN', 'TSND', 'TTMP', 'TTNS', 'TVBR', 'TVTR', 'TWPH', 'XCBR', 'XFUS', 'XSWI', 'YEFN', 'YLTC', 'YPSH', 'YPTR', 'ZAXN', 'ZBAT', 'ZBSH', 'ZCAB', 'ZCAP', 'ZCON', 'ZGEN', 'ZGIL', 'ZLIN', 'ZMOT', 'ZREA', 'ZRES', 'ZRRC', 'ZSAR', 'ZSCR', 'ZSMC', 'ZTCF', 'ZTCR', ]"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "cdClasses",
+          "declaration": {
+            "name": "cdClasses",
+            "module": "constants.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "lnClass74",
+          "declaration": {
+            "name": "lnClass74",
+            "module": "constants.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "foundation.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "getSelectionByPath",
+          "return": {
+            "type": {
+              "text": "TreeSelection"
+            }
+          },
+          "parameters": [
+            {
+              "name": "selection",
+              "type": {
+                "text": "TreeSelection"
+              }
+            },
+            {
+              "name": "path",
+              "type": {
+                "text": "string[]"
+              }
+            }
+          ],
+          "description": "Get the selection object by navigating through a specific path in the tree selection structure"
+        },
+        {
+          "kind": "function",
+          "name": "processEnums",
+          "return": {
+            "type": {
+              "text": "TreeSelection"
+            }
+          },
+          "parameters": [
+            {
+              "name": "selection",
+              "type": {
+                "text": "TreeSelection"
+              }
+            },
+            {
+              "name": "node",
+              "type": {
+                "text": "NodeData"
+              }
+            }
+          ],
+          "description": "Returns selection of mandatory enums and fills them with values recursively."
+        },
+        {
+          "kind": "function",
+          "name": "serializeAndFormat",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "doc",
+              "type": {
+                "text": "XMLDocument"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "createBaseSCLDoc",
+          "return": {
+            "type": {
+              "text": "XMLDocument"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "getSelectionByPath",
+          "declaration": {
+            "name": "getSelectionByPath",
+            "module": "foundation.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "processEnums",
+          "declaration": {
+            "name": "processEnums",
+            "module": "foundation.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "serializeAndFormat",
+          "declaration": {
+            "name": "serializeAndFormat",
+            "module": "foundation.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createBaseSCLDoc",
+          "declaration": {
+            "name": "createBaseSCLDoc",
+            "module": "foundation.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "oscd-editor-template-generator.testfiles.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "lNodeSelection",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ Beh: { q: {}, stVal: { blocked: {}, off: {}, on: {}, test: {}, 'test/blocked': {}, }, t: {}, }, AnOut2: { ctlModel: { 'direct-with-enhanced-security': {}, 'direct-with-normal-security': {}, 'sbo-with-enhanced-security': {}, 'sbo-with-normal-security': {}, 'status-only': {}, }, dbRef: {}, mxVal: { f: {}, }, Oper: { Check: {}, ctlNum: {}, ctlVal: {}, origin: { orCat: { 'automatic-bay': {}, 'automatic-remote': {}, 'automatic-station': {}, 'bay-control': {}, maintenance: {}, 'not-supported': {}, process: {}, 'remote-control': {}, 'station-control': {}, }, orIdent: {}, }, T: {}, Test: {}, }, }, CntVal2: { pulsQty: {}, q: {}, actVal: {}, }, DPCSO2: { ctlModel: { 'direct-with-enhanced-security': {}, 'direct-with-normal-security': {}, 'sbo-with-enhanced-security': {}, 'sbo-with-normal-security': {}, 'status-only': {}, }, q: {}, stVal: {}, t: {}, Oper: { Check: {}, ctlNum: {}, ctlVal: {}, origin: { orCat: { 'automatic-bay': {}, 'automatic-remote': {}, 'automatic-station': {}, 'bay-control': {}, maintenance: {}, 'not-supported': {}, process: {}, 'remote-control': {}, 'station-control': {}, }, orIdent: {}, }, T: {}, Test: {}, }, }, ISCSO2: { ctlModel: { 'direct-with-enhanced-security': {}, 'direct-with-normal-security': {}, 'sbo-with-enhanced-security': {}, 'sbo-with-normal-security': {}, 'status-only': {}, }, Oper: { Check: {}, ctlNum: {}, ctlVal: {}, origin: { orCat: { 'automatic-bay': {}, 'automatic-remote': {}, 'automatic-station': {}, 'bay-control': {}, maintenance: {}, 'not-supported': {}, process: {}, 'remote-control': {}, 'station-control': {}, }, orIdent: {}, }, T: {}, Test: {}, }, valWTr: { posVal: {}, }, }, InRef2: { setSrcRef: {}, }, SPCSO2: { ctlModel: { 'direct-with-enhanced-security': {}, 'direct-with-normal-security': {}, 'sbo-with-enhanced-security': {}, 'sbo-with-normal-security': {}, 'status-only': {}, }, Oper: { Check: {}, ctlNum: {}, ctlVal: {}, origin: { orCat: { 'automatic-bay': {}, 'automatic-remote': {}, 'automatic-station': {}, 'bay-control': {}, maintenance: {}, 'not-supported': {}, process: {}, 'remote-control': {}, 'station-control': {}, }, orIdent: {}, }, T: {}, Test: {}, }, q: {}, stVal: {}, t: {}, }, Ind2: { q: {}, stVal: {}, t: {}, }, }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "lNodeSelection",
+          "declaration": {
+            "name": "lNodeSelection",
+            "module": "oscd-editor-template-generator.testfiles.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "oscd-editor-template-generator.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TemplateGenerator",
+          "members": [
+            {
+              "kind": "field",
+              "name": "scopedElements",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'tree-grid': TreeGrid, 'md-filled-select': MdFilledSelect, 'md-select-option': MdSelectOption, 'md-outlined-select': MdOutlinedSelect, 'md-fab': MdFab, 'md-icon': MdIcon, 'md-outlined-button': MdOutlinedButton, 'md-dialog': MdDialog, 'md-outlined-text-field': MdOutlinedTextField, 'oscd-snackbar': Snackbar, 'create-data-object-dialog': CreateDataObjectDialog, 'description-dialog': DescriptionDialog, 'preview-dialog': PreviewDialog, }"
+            },
+            {
+              "kind": "field",
+              "name": "editor",
+              "type": {
+                "text": "Transactor<EditV2>"
+              },
+              "attribute": "editor"
+            },
+            {
+              "kind": "field",
+              "name": "doc",
+              "type": {
+                "text": "XMLDocument | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "treeUI",
+              "type": {
+                "text": "TreeGrid"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "lNodeTypeUI",
+              "type": {
+                "text": "MdFilledSelect | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "createDOdialog",
+              "type": {
+                "text": "CreateDataObjectDialog"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "descriptionDialog",
+              "type": {
+                "text": "DescriptionDialog"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "previewDialog",
+              "type": {
+                "text": "PreviewDialog"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "selection",
+              "type": {
+                "text": "TreeSelection"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "filter",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "lNodeType",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "addedLNode",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "snackbarMessage",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "snackbarType",
+              "type": {
+                "text": "'success' | 'error'"
+              },
+              "default": "'success'"
+            },
+            {
+              "kind": "method",
+              "name": "saveTemplates",
+              "parameters": [
+                {
+                  "name": "description",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "reset"
+            },
+            {
+              "kind": "field",
+              "name": "handleDOConfirm",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "createDataObject",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "cdcType",
+                  "type": {
+                    "text": "(typeof cdClasses)[number]"
+                  }
+                },
+                {
+                  "name": "doName",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "namespace",
+                  "type": {
+                    "text": "string | null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "showNotification",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "type",
+                  "type": {
+                    "text": "'success' | 'error'"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "showPreview",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "updateSelectionAtPath",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "TreeSelection"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "selection",
+                  "type": {
+                    "text": "TreeSelection"
+                  }
+                },
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string[]"
+                  }
+                },
+                {
+                  "name": "newSelection",
+                  "type": {
+                    "text": "TreeSelection"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "handleNodeSelected",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "autoSelectEnums",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "editor",
+              "type": {
+                "text": "Transactor<EditV2>"
+              },
+              "fieldName": "editor"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "ScopedElementsMixin",
+              "package": "@open-wc/scoped-elements/lit-element.js"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "TemplateGenerator",
+            "module": "oscd-editor-template-generator.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/create-do-dialog.spec.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "create-data-object-dialog",
+          "declaration": {
+            "name": "CreateDataObjectDialog",
+            "module": "/components/create-do-dialog.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/create-do-dialog.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CreateDataObjectDialog",
+          "members": [
+            {
+              "kind": "field",
+              "name": "scopedElements",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'md-dialog': MdDialog, 'md-text-button': MdTextButton, 'md-outlined-select': MdFilledSelect, 'md-select-option': MdSelectOption, 'md-outlined-text-field': MdOutlinedTextField, }"
+            },
+            {
+              "kind": "field",
+              "name": "cdClasses",
+              "type": {
+                "text": "string[]"
+              },
+              "default": "[]",
+              "attribute": "cdClasses"
+            },
+            {
+              "kind": "field",
+              "name": "tree",
+              "type": {
+                "text": "Partial<Record<string, NodeData>>"
+              },
+              "default": "{}",
+              "attribute": "tree"
+            },
+            {
+              "kind": "field",
+              "name": "onConfirm",
+              "type": {
+                "text": "(\n    cdcType: string,\n    doName: string,\n    namespace: string | null,\n  ) => void | undefined"
+              },
+              "attribute": "onConfirm"
+            },
+            {
+              "kind": "field",
+              "name": "dialog",
+              "type": {
+                "text": "MdDialog"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "cdcType",
+              "type": {
+                "text": "MdFilledSelect"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "doName",
+              "type": {
+                "text": "MdOutlinedTextField"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "namespace",
+              "type": {
+                "text": "MdOutlinedTextField"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "namespaceDefaultValue",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "private",
+              "default": "'User-Defined'"
+            },
+            {
+              "kind": "field",
+              "name": "isCustomNamespaceDisabled",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "show"
+            },
+            {
+              "kind": "method",
+              "name": "close"
+            },
+            {
+              "kind": "method",
+              "name": "getDONameStatus",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "DONameStatus"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "onValueChange",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setDONameStatusError",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "status",
+                  "type": {
+                    "text": "DONameStatus"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "validate",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "resetErrorText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleConfirm",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "cdClasses",
+              "type": {
+                "text": "string[]"
+              },
+              "default": "[]",
+              "fieldName": "cdClasses"
+            },
+            {
+              "name": "tree",
+              "type": {
+                "text": "Partial<Record<string, NodeData>>"
+              },
+              "default": "{}",
+              "fieldName": "tree"
+            },
+            {
+              "name": "onConfirm",
+              "type": {
+                "text": "(\n    cdcType: string,\n    doName: string,\n    namespace: string | null,\n  ) => void | undefined"
+              },
+              "fieldName": "onConfirm"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "ScopedElementsMixin",
+              "package": "@open-wc/scoped-elements/lit-element.js"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "create-data-object-dialog",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CreateDataObjectDialog",
+          "declaration": {
+            "name": "CreateDataObjectDialog",
+            "module": "components/create-do-dialog.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/description-dialog.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "DescriptionDialog",
+          "members": [
+            {
+              "kind": "field",
+              "name": "scopedElements",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'md-dialog': MdDialog, 'md-text-button': MdTextButton, 'md-outlined-text-field': MdOutlinedTextField, }"
+            },
+            {
+              "kind": "field",
+              "name": "cdClasses",
+              "type": {
+                "text": "string[]"
+              },
+              "default": "[]",
+              "attribute": "cdClasses"
+            },
+            {
+              "kind": "field",
+              "name": "onConfirm",
+              "type": {
+                "text": "(description: string) => void"
+              },
+              "attribute": "onConfirm"
+            },
+            {
+              "kind": "field",
+              "name": "onCancel",
+              "type": {
+                "text": "() => void"
+              },
+              "attribute": "onCancel"
+            },
+            {
+              "kind": "field",
+              "name": "dialog",
+              "type": {
+                "text": "MdDialog"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "description",
+              "type": {
+                "text": "MdOutlinedTextField"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "show"
+            },
+            {
+              "kind": "method",
+              "name": "close"
+            },
+            {
+              "kind": "method",
+              "name": "validate",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "resetErrorText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleConfirm",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "cdClasses",
+              "type": {
+                "text": "string[]"
+              },
+              "default": "[]",
+              "fieldName": "cdClasses"
+            },
+            {
+              "name": "onConfirm",
+              "type": {
+                "text": "(description: string) => void"
+              },
+              "fieldName": "onConfirm"
+            },
+            {
+              "name": "onCancel",
+              "type": {
+                "text": "() => void"
+              },
+              "fieldName": "onCancel"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "ScopedElementsMixin",
+              "package": "@open-wc/scoped-elements/lit-element.js"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DescriptionDialog",
+          "declaration": {
+            "name": "DescriptionDialog",
+            "module": "components/description-dialog.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/preview-dialog.spec.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "preview-dialog",
+          "declaration": {
+            "name": "PreviewDialog",
+            "module": "/components/preview-dialog.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/preview-dialog.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "PreviewDialog",
+          "members": [
+            {
+              "kind": "field",
+              "name": "scopedElements",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'md-dialog': MdDialog, 'md-text-button': MdTextButton, 'ace-editor': AceEditor, }"
+            },
+            {
+              "kind": "field",
+              "name": "dialog",
+              "type": {
+                "text": "MdDialog"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "aceEditor",
+              "type": {
+                "text": "typeof AceEditor"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "selection",
+              "type": {
+                "text": "TreeSelection"
+              },
+              "default": "{}",
+              "attribute": "selection"
+            },
+            {
+              "kind": "field",
+              "name": "tree",
+              "type": {
+                "text": "LNodeDescription | undefined"
+              },
+              "default": "undefined",
+              "attribute": "tree"
+            },
+            {
+              "kind": "field",
+              "name": "lNodeType",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "lNodeType"
+            },
+            {
+              "kind": "field",
+              "name": "xmlContent",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "show"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "selection",
+              "type": {
+                "text": "TreeSelection"
+              },
+              "default": "{}",
+              "fieldName": "selection"
+            },
+            {
+              "name": "tree",
+              "type": {
+                "text": "LNodeDescription | undefined"
+              },
+              "default": "undefined",
+              "fieldName": "tree"
+            },
+            {
+              "name": "lNodeType",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "lNodeType"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "ScopedElementsMixin",
+              "package": "@open-wc/scoped-elements/lit-element.js"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "preview-dialog",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PreviewDialog",
+          "declaration": {
+            "name": "PreviewDialog",
+            "module": "components/preview-dialog.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/snackbar.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "Snackbar",
+          "members": [
+            {
+              "kind": "field",
+              "name": "message",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "message"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "'success' | 'error'"
+              },
+              "default": "'success'",
+              "attribute": "type"
+            },
+            {
+              "kind": "field",
+              "name": "visible",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "message",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "message"
+            },
+            {
+              "name": "type",
+              "type": {
+                "text": "'success' | 'error'"
+              },
+              "default": "'success'",
+              "fieldName": "type"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "Snackbar",
+          "declaration": {
+            "name": "Snackbar",
+            "module": "components/snackbar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "utils/debounce.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "debounce",
+          "parameters": [
+            {
+              "name": "fn",
+              "type": {
+                "text": "T"
+              }
+            },
+            {
+              "name": "delay",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "debounce",
+          "declaration": {
+            "name": "debounce",
+            "module": "utils/debounce.ts"
+          }
+        }
+      ]
+    }
+  ]
+}

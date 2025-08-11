@@ -1,11 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { css, html, LitElement } from 'lit';
-import { property, state, query } from 'lit/decorators.js';
 
 import { ScopedElementsMixin } from '@open-wc/scoped-elements/lit-element.js';
-
-import { newEditEvent } from '@openenergytools/open-scd-core';
 
 import {
   insertSelectedLNodeType,
@@ -24,6 +19,7 @@ import { MdOutlinedTextField } from '@scopedelement/material-web/textfield/MdOut
 import { MdOutlinedButton } from '@scopedelement/material-web/button/outlined-button.js';
 import { MdDialog } from '@scopedelement/material-web/dialog/dialog.js';
 import { CdcChildren } from '@openenergytools/scl-lib/dist/tDataTypeTemplates/nsdToJson.js';
+import { property, query, state } from 'lit/decorators.js';
 import { Snackbar } from './components/snackbar.js';
 import { CreateDataObjectDialog } from './components/create-do-dialog.js';
 import { DescriptionDialog } from './components/description-dialog.js';
@@ -31,6 +27,7 @@ import { PreviewDialog } from './components/preview-dialog.js';
 
 import { cdClasses, lnClass74 } from './constants.js';
 import { NodeData, getSelectionByPath, processEnums } from './foundation.js';
+import { EditV2, Transactor } from '@omicronenergy/oscd-api';
 
 let lastLNodeType = 'LPHD';
 let lastSelection = {};
@@ -53,6 +50,9 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     'preview-dialog': PreviewDialog,
   };
 
+  @property({ type: Object })
+  editor!: Transactor<EditV2>;
+
   @property({ attribute: false })
   doc?: XMLDocument;
 
@@ -73,7 +73,9 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
 
   @state()
   get selection(): TreeSelection {
-    if (!this.treeUI) return {};
+    if (!this.treeUI) {
+      return {};
+    }
     return this.treeUI.selection;
   }
 
@@ -83,7 +85,9 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
 
   @state()
   get filter(): string {
-    if (!this.treeUI) return '';
+    if (!this.treeUI) {
+      return '';
+    }
     return this.treeUI.filter ?? '';
   }
 
@@ -97,9 +101,13 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   }
 
   set lNodeType(lNodeType: string) {
-    if (!this.lNodeTypeUI) return;
+    if (!this.lNodeTypeUI) {
+      return;
+    }
     this.lNodeTypeUI.value = lNodeType;
-    if (!this.lNodeTypeUI.value) this.lNodeTypeUI.value = lastLNodeType;
+    if (!this.lNodeTypeUI.value) {
+      this.lNodeTypeUI.value = lastLNodeType;
+    }
   }
 
   @state()
@@ -122,7 +130,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     await this.treeUI.updateComplete;
     await this.lNodeTypeUI!.updateComplete;
 
-    this.treeUI.tree = nsdToJson(lastLNodeType) as any;
+    this.treeUI.tree = nsdToJson(lastLNodeType) as Record<string, NodeData>;
     this.lNodeType = lastLNodeType;
     this.filter = lastFilter;
     this.selection = lastSelection;
@@ -133,7 +141,9 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   }
 
   saveTemplates(description: string) {
-    if (!this.doc) return;
+    if (!this.doc) {
+      return;
+    }
 
     const inserts = insertSelectedLNodeType(this.doc, this.treeUI.selection, {
       class: this.lNodeType,
@@ -142,21 +152,19 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     });
 
     const newLNodeType = inserts.find(
-      insert => (insert.node as Element).tagName === 'LNodeType'
+      insert => (insert.node as Element).tagName === 'LNodeType',
     )?.node as Element;
 
-    if (newLNodeType) this.addedLNode = newLNodeType.getAttribute('id') ?? '';
+    if (newLNodeType) {
+      this.addedLNode = newLNodeType.getAttribute('id') ?? '';
+    }
 
-    this.dispatchEvent(
-      newEditEvent(inserts, {
-        title: `Create LNodeType ${newLNodeType.getAttribute('id')}`,
-      })
-    );
+    this.editor.commit(inserts);
   }
 
   async reset() {
     this.addedLNode = '';
-    this.treeUI.tree = nsdToJson(this.lNodeType) as any;
+    this.treeUI.tree = nsdToJson(this.lNodeType) as Record<string, NodeData>;
     this.selection = {};
     this.filter = '';
     this.requestUpdate();
@@ -169,23 +177,25 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   private handleDOConfirm = (
     cdcType: string,
     doName: string,
-    namespace: string | null
+    namespace: string | null,
   ) => {
-    if (!cdcType || !doName) return;
+    if (!cdcType || !doName) {
+      return;
+    }
     try {
       this.createDataObject(
         cdcType as (typeof cdClasses)[number],
         doName,
-        namespace
+        namespace,
       );
       this.showNotification(
         `Data Object '${doName}' created successfully.`,
-        'success'
+        'success',
       );
-    } catch (error) {
+    } catch {
       this.showNotification(
         'Failed to create Data Object. Please try again.',
-        'error'
+        'error',
       );
     }
   };
@@ -193,7 +203,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   private createDataObject(
     cdcType: (typeof cdClasses)[number],
     doName: string,
-    namespace: string | null
+    namespace: string | null,
   ): void {
     let cdcChildren = nsdToJson(cdcType) as CdcChildren;
 
@@ -238,9 +248,11 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   private updateSelectionAtPath(
     selection: TreeSelection,
     path: string[],
-    newSelection: TreeSelection
+    newSelection: TreeSelection,
   ): TreeSelection {
-    if (path.length === 0) return newSelection;
+    if (path.length === 0) {
+      return newSelection;
+    }
 
     const [currentKey, ...remainingPath] = path;
     return {
@@ -248,7 +260,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       [currentKey]: this.updateSelectionAtPath(
         selection[currentKey] || {},
         remainingPath,
-        newSelection
+        newSelection,
       ),
     };
   }
@@ -258,18 +270,18 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
 
     const currentSelectionAtPath = getSelectionByPath(
       this.treeUI.selection,
-      path
+      path,
     );
 
     const selectionWithEnums = processEnums(
       currentSelectionAtPath,
-      node as NodeData
+      node as NodeData,
     );
 
     this.treeUI.selection = this.updateSelectionAtPath(
       this.treeUI.selection,
       path,
-      selectionWithEnums
+      selectionWithEnums,
     );
 
     this.treeUI.requestUpdate();
@@ -301,7 +313,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
               lNodeType =>
                 html`<md-select-option value=${lNodeType}
                   >${lNodeType}</md-select-option
-                >`
+                >`,
             )}
           </md-filled-select>
         </div>
@@ -340,7 +352,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
   }
 
   static styles = css`
-    * {
+    /* * {
       --md-sys-color-primary: var(--oscd-primary);
       --md-sys-color-secondary: var(--oscd-secondary);
       --md-sys-typescale-body-large-font: var(--oscd-theme-text-font);
@@ -364,7 +376,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
       --md-dialog-container-color: var(--oscd-base3);
       --md-dialog-container-shape: 4px;
       --md-text-button-container-shape: 4px;
-    }
+    } */
 
     md-outlined-button {
       text-transform: uppercase;

@@ -1,7 +1,7 @@
-// import { playwrightLauncher } from '@web/test-runner-playwright';
+import { playwrightLauncher } from '@web/test-runner-playwright';
 import { polyfill } from '@web/dev-server-polyfill';
 
-const filteredLogs = ['Running in dev mode', 'lit-html is in dev mode'];
+const filteredLogs = ['Running in dev mode', 'Lit is in dev mode'];
 
 export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
   /** Test files to run */
@@ -10,17 +10,6 @@ export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
   /** Resolve bare module imports */
   nodeResolve: {
     exportConditions: ['browser', 'development'],
-  },
-
-  /** Coverage configuration */
-  coverageConfig: {
-    exclude: [
-      '**/node_modules/**',
-      '**/*.spec.js',
-      '**/*.test.js',
-      '**/constants.js',
-      '**/*.testfiles.js',
-    ],
   },
 
   /** Filter out lit dev mode logs */
@@ -49,11 +38,11 @@ export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
   // concurrency: 1,
 
   /** Browsers to run tests on */
-  // browsers: [
-  //   playwrightLauncher({ product: 'chromium' }),
-  //   playwrightLauncher({ product: 'firefox' }),
-  //   playwrightLauncher({ product: 'webkit' }),
-  // ],
+  browsers: [
+    playwrightLauncher({ product: 'chromium' }),
+    // playwrightLauncher({ product: 'firefox' }),
+    // playwrightLauncher({ product: 'webkit' }),
+  ],
 
   // See documentation for all available options
 });

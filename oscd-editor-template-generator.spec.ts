@@ -1,9 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { fixture, expect, html, waitUntil } from '@open-wc/testing';
 import { restore, SinonSpy, spy } from 'sinon';
-import { Insert } from '@openenergytools/open-scd-core';
 
-import TemplateGenerator from './oscd-template-generator.js';
-import { lNodeSelection } from './oscd-template-generator.testfiles.js';
+import TemplateGenerator from './oscd-editor-template-generator.js';
+import { lNodeSelection } from './oscd-editor-template-generator.testfiles.js';
+import {
+  EditV2,
+  Insert,
+  Transactor,
+  TransactedCallback,
+} from '@omicronenergy/oscd-api';
 
 customElements.define('template-generator', TemplateGenerator);
 
@@ -14,8 +20,21 @@ export const sclDocString = `<?xml version="1.0" encoding="UTF-8"?>
 
 describe('TemplateGenerator', () => {
   let element: TemplateGenerator;
+  let editor: Transactor<EditV2> & { commit: SinonSpy };
   beforeEach(async () => {
-    element = await fixture(html`<template-generator></template-generator>`);
+    editor = {
+      commit: spy(),
+      undo: () => undefined,
+      redo: () => undefined,
+      past: [],
+      future: [],
+      subscribe: (txCallback: TransactedCallback<EditV2>) => {
+        return () => txCallback;
+      },
+    };
+    element = await fixture(
+      html`<template-generator .editor=${editor}></template-generator>`,
+    );
   });
 
   it('displays no action button', () =>
@@ -29,7 +48,7 @@ describe('TemplateGenerator', () => {
   it('displays a button to create a new DO', () => {
     expect(element.shadowRoot?.querySelector('md-outlined-button')).to.exist;
     expect(
-      element.shadowRoot?.querySelector('md-outlined-button')
+      element.shadowRoot?.querySelector('md-outlined-button'),
     ).to.include.text('Add Data Object');
   });
 
@@ -38,7 +57,7 @@ describe('TemplateGenerator', () => {
       expect(element.createDOdialog.open).to.be.false;
 
       const button = element.shadowRoot?.querySelector(
-        'md-outlined-button'
+        'md-outlined-button',
       ) as HTMLElement;
       button.click();
 
@@ -54,18 +73,18 @@ describe('TemplateGenerator', () => {
       expect(dialog.doName.error).to.be.false;
 
       const confirmButton = dialog.shadowRoot?.querySelector(
-        '#confirm-btn'
+        '#confirm-btn',
       ) as HTMLElement;
       confirmButton.click();
 
       expect(dialog.cdcType.error).to.be.true;
       expect(dialog.cdcType.errorText).to.equal(
-        'Please select a common data class.'
+        'Please select a common data class.',
       );
       expect(dialog.doName.error).to.be.true;
       expect(dialog.doName.errorText).to.equal('Not a valid DO name.');
       const doNameInput = dialog.shadowRoot?.querySelector(
-        '#do-name'
+        '#do-name',
       ) as HTMLInputElement;
       doNameInput.value = 'ValidDOName';
       doNameInput.dispatchEvent(new Event('input'));
@@ -80,13 +99,13 @@ describe('TemplateGenerator', () => {
       const treeBefore = JSON.parse(JSON.stringify(element.treeUI.tree));
 
       const doNameInput = dialog.shadowRoot?.querySelector(
-        '#do-name'
+        '#do-name',
       ) as HTMLInputElement;
       doNameInput.value = 'TestDO';
       doNameInput.dispatchEvent(new Event('input'));
 
       const cdcTypeSelect = dialog.shadowRoot?.querySelector(
-        '#cdc-type'
+        '#cdc-type',
       ) as HTMLSelectElement;
       cdcTypeSelect.value = 'ACD';
       cdcTypeSelect.dispatchEvent(new Event('input'));
@@ -94,7 +113,7 @@ describe('TemplateGenerator', () => {
       dialog.namespace.value = 'custom-namespace';
 
       const confirmButton = dialog.shadowRoot?.querySelector(
-        '#confirm-btn'
+        '#confirm-btn',
       ) as HTMLElement;
       confirmButton.click();
 
@@ -126,7 +145,7 @@ describe('TemplateGenerator', () => {
       dialog.namespace.value = 'custom-namespace';
 
       const confirmButton = dialog.shadowRoot?.querySelector(
-        '#confirm-btn'
+        '#confirm-btn',
       ) as HTMLElement;
       confirmButton.click();
 
@@ -134,17 +153,17 @@ describe('TemplateGenerator', () => {
         const snackbar = element.shadowRoot?.querySelector('oscd-snackbar');
         return (
           snackbar &&
-          (snackbar as any).shadowRoot?.textContent?.includes(
-            "Data Object 'TestDO' created successfully."
+          (snackbar as HTMLElement).shadowRoot?.textContent?.includes(
+            "Data Object 'TestDO' created successfully.",
           )
         );
       });
       const snackbar = element.shadowRoot?.querySelector(
-        'oscd-snackbar'
+        'oscd-snackbar',
       ) as HTMLElement & { message?: string; type?: string };
       expect(snackbar).to.exist;
       expect(snackbar.shadowRoot?.textContent).to.include(
-        "Data Object 'TestDO' created successfully."
+        "Data Object 'TestDO' created successfully.",
       );
     });
 
@@ -163,7 +182,7 @@ describe('TemplateGenerator', () => {
       };
 
       const confirmButton = dialog.shadowRoot?.querySelector(
-        '#confirm-btn'
+        '#confirm-btn',
       ) as HTMLElement;
       confirmButton.click();
 
@@ -173,20 +192,20 @@ describe('TemplateGenerator', () => {
           const snackbar = element.shadowRoot?.querySelector('oscd-snackbar');
           return (
             snackbar &&
-            (snackbar as any).shadowRoot?.textContent?.includes(
-              'Failed to create Data Object. Please try again.'
+            (snackbar as HTMLElement).shadowRoot?.textContent?.includes(
+              'Failed to create Data Object. Please try again.',
             )
           );
         },
         undefined,
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
       const snackbar = element.shadowRoot?.querySelector(
-        'oscd-snackbar'
+        'oscd-snackbar',
       ) as HTMLElement & { message?: string; type?: string };
       expect(snackbar).to.exist;
       expect(snackbar.shadowRoot?.textContent).to.include(
-        'Failed to create Data Object. Please try again.'
+        'Failed to create Data Object. Please try again.',
       );
 
       element['createDataObject'] = originalCreateDataObject;
@@ -194,14 +213,11 @@ describe('TemplateGenerator', () => {
   });
 
   describe('given a loaded document', () => {
-    let listener: SinonSpy;
     afterEach(restore);
     beforeEach(async () => {
-      listener = spy();
-      element.addEventListener('oscd-edit-v2', listener);
       element.doc = new DOMParser().parseFromString(
         sclDocString,
-        'application/xml'
+        'application/xml',
       );
       await element.updateComplete;
     });
@@ -218,7 +234,7 @@ describe('TemplateGenerator', () => {
       descriptionDialog.description.value = 'Test Description';
 
       const confirmButton = descriptionDialog.shadowRoot?.querySelector(
-        '#confirm-button'
+        '#confirm-button',
       ) as HTMLElement;
       confirmButton.click();
       /* expect five calls for
@@ -228,12 +244,12 @@ describe('TemplateGenerator', () => {
            - PhyNam
            - Proxy
        */
-      const edits = listener.args[0][0].detail.edit;
+      const edits = editor.commit.args[0][0];
       expect(edits).to.have.lengthOf(5);
-      edits.forEach((edit: any) => {
+      edits.forEach((edit: Insert) => {
         expect(edit).to.have.property(
           'parent',
-          element.doc?.querySelector('DataTypeTemplates')
+          element.doc?.querySelector('DataTypeTemplates'),
         );
         expect(edit).to.have.property('node');
       });
@@ -249,12 +265,12 @@ describe('TemplateGenerator', () => {
       descriptionDialog.description.value = 'Test Description';
 
       const confirmButton = descriptionDialog.shadowRoot?.querySelector(
-        '#confirm-button'
+        '#confirm-button',
       ) as HTMLElement;
       confirmButton.click();
 
       // expect one more call for the DTT section
-      const edits = listener.args[0][0].detail.edit;
+      const edits = editor.commit.args[0][0];
       expect(edits).to.have.lengthOf(6);
       expect(edits[0]).to.have.property('parent', element.doc?.documentElement);
       expect(edits[0])
@@ -270,7 +286,7 @@ describe('TemplateGenerator', () => {
 
       async function selectAll(column: number) {
         const item = element.treeUI.shadowRoot?.querySelector(
-          `md-list:nth-of-type(${column + 1}) > md-list-item:first-of-type`
+          `md-list:nth-of-type(${column + 1}) > md-list-item:first-of-type`,
         ) as HTMLElement;
         item?.click();
         await element.treeUI.updateComplete;
@@ -290,7 +306,7 @@ describe('TemplateGenerator', () => {
       descriptionDialog.description.value = 'Test Description';
 
       const confirmButton = descriptionDialog.shadowRoot?.querySelector(
-        '#confirm-button'
+        '#confirm-button',
       ) as HTMLElement;
       confirmButton.click();
 
@@ -326,20 +342,20 @@ describe('TemplateGenerator', () => {
                   stVal
                   subVal
        */
-      const edits = listener.args[0][0].detail.edit;
+      const edits = editor.commit.args[0][0];
       expect(edits).to.have.lengthOf(30);
-      const elms = edits.map((edit: { node: any }) => edit.node);
+      const elms = edits.map((edit: { node: Element }) => edit.node);
       expect(
-        elms.filter((e: { tagName: string }) => e.tagName === 'LNodeType')
+        elms.filter((e: { tagName: string }) => e.tagName === 'LNodeType'),
       ).to.have.lengthOf(1);
       expect(
-        elms.filter((e: { tagName: string }) => e.tagName === 'DOType')
+        elms.filter((e: { tagName: string }) => e.tagName === 'DOType'),
       ).to.have.lengthOf(13);
       expect(
-        elms.filter((e: { tagName: string }) => e.tagName === 'DAType')
+        elms.filter((e: { tagName: string }) => e.tagName === 'DAType'),
       ).to.have.lengthOf(8);
       expect(
-        elms.filter((e: { tagName: string }) => e.tagName === 'EnumType')
+        elms.filter((e: { tagName: string }) => e.tagName === 'EnumType'),
       ).to.have.lengthOf(8);
     }).timeout(10000); // selecting 550 paths for a full LLN0 is rather slow.
 
@@ -367,19 +383,19 @@ describe('TemplateGenerator', () => {
         await waitUntil(() => dialog.open);
 
         const doNameInput = dialog.shadowRoot?.querySelector(
-          '#do-name'
+          '#do-name',
         ) as HTMLInputElement;
         doNameInput.value = name;
         doNameInput.dispatchEvent(new Event('input'));
 
         const cdcTypeSelect = dialog.shadowRoot?.querySelector(
-          '#cdc-type'
+          '#cdc-type',
         ) as HTMLSelectElement;
         cdcTypeSelect.value = type;
         cdcTypeSelect.dispatchEvent(new Event('input'));
 
         const confirmButton = dialog.shadowRoot?.querySelector(
-          '#confirm-btn'
+          '#confirm-btn',
         ) as HTMLElement;
         confirmButton.click();
 
@@ -389,7 +405,7 @@ describe('TemplateGenerator', () => {
         expect(element.treeUI.tree[name]).to.have.property('type', type);
         expect(element.treeUI.tree[name]).to.have.property(
           'tagName',
-          'DataObject'
+          'DataObject',
         );
         expect(element.treeUI.tree[name]).to.have.property('descID', '');
         expect(element.treeUI.tree[name]).to.have.property('presCond', 'O');
@@ -405,14 +421,14 @@ describe('TemplateGenerator', () => {
       descriptionDialog.description.value = 'Test Description';
 
       const confirmButton = descriptionDialog.shadowRoot?.querySelector(
-        '#confirm-button'
+        '#confirm-button',
       ) as HTMLElement;
       confirmButton.click();
       await element.updateComplete;
 
-      const inserts = listener.args[0][0].detail.edit;
+      const inserts = editor.commit.args[0][0];
       const insertedDOs = inserts.filter(
-        (insert: Insert) => (insert.node as Element).tagName === 'DOType'
+        (insert: Insert) => (insert.node as Element).tagName === 'DOType',
       );
       const expectedIds = [
         'Beh$oscd$_',
@@ -422,7 +438,7 @@ describe('TemplateGenerator', () => {
       insertedDOs.forEach((insert: Insert, idx: number) => {
         const id = (insert.node as Element).getAttribute('id');
         expect(id, `Insert ID at index ${idx} is incorrect`).to.include(
-          expectedIds[idx]
+          expectedIds[idx],
         );
       });
     }).timeout(10000);

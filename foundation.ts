@@ -47,9 +47,11 @@ function selectEnumValues(sel: TreeSelection, node: NodeData): TreeSelection {
  */
 function selectEnumNode(
   selection: TreeSelection,
-  node: NodeData
+  node: NodeData,
 ): TreeSelection {
-  if (!node.children) return selection;
+  if (!node.children) {
+    return selection;
+  }
 
   const newSel: TreeSelection = { ...selection };
 
@@ -71,7 +73,7 @@ function selectEnumNode(
  */
 export function getSelectionByPath(
   selection: TreeSelection,
-  path: string[]
+  path: string[],
 ): TreeSelection {
   let currentSelection = selection;
 
@@ -87,7 +89,7 @@ export function getSelectionByPath(
  */
 export function processEnums(
   selection: TreeSelection,
-  node: NodeData
+  node: NodeData,
 ): TreeSelection {
   let newSel: TreeSelection = selectEnumNode(selection, node);
 
@@ -112,9 +114,13 @@ function formatXml(xml: string): string {
   let indent = '';
   const tab = '\t';
   xml.split(/>\s*</).forEach(node => {
-    if (node.match(/^\/\w/)) indent = indent.substring(tab.length);
+    if (node.match(/^\/\w/)) {
+      indent = indent.substring(tab.length);
+    }
     formatted += `${indent}<${node}>\r\n`;
-    if (node.match(/^<?\w[^>]*[^/]$/)) indent += tab;
+    if (node.match(/^<?\w[^>]*[^/]$/)) {
+      indent += tab;
+    }
   });
   return formatted.substring(1, formatted.length - 3);
 }
@@ -131,6 +137,6 @@ export function createBaseSCLDoc(): XMLDocument {
       <SCL xmlns="http://www.iec.ch/61850/2003/SCL" version="2007" revision="B" release="5">
         <Header id="LNodeTypePreview"/>
       </SCL>`,
-    'application/xml'
+    'application/xml',
   );
 }

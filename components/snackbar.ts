@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LitElement, html, css, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
@@ -61,7 +60,9 @@ export class Snackbar extends LitElement {
   }
 
   render() {
-    if (!this.message) return html``;
+    if (!this.message) {
+      return html``;
+    }
     return html`
       <div
         class="snackbar ${this.type} ${this.visible ? 'visible' : ''}"

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ScopedElementsMixin } from '@open-wc/scoped-elements/lit-element.js';
 import { LitElement, html, css } from 'lit';
 import { query, property } from 'lit/decorators.js';
@@ -25,7 +24,7 @@ export class PreviewDialog extends ScopedElementsMixin(LitElement) {
   dialog!: MdDialog;
 
   @query('ace-editor')
-  aceEditor!: AceEditor;
+  aceEditor!: typeof AceEditor;
 
   @property({ type: Object })
   selection: TreeSelection = {};
