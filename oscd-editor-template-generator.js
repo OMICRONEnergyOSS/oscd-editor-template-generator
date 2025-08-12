@@ -1101,7 +1101,7 @@ Array(maxSmvAppId - minSmvAppId)
     .fill(1)
     .map((_, i) => (minSmvAppId + i).toString(16).toUpperCase().padStart(4, "0"));
 
-await fetch(new URL("../foundation/nsd.json", import.meta.url)).then((res) => res.json());
+await fetch(new URL(new URL('assets/nsd-BZ5JISRf.json', import.meta.url).href)).then((res) => res.json());
 
 const nsd72 = `<?xml version="1.0" encoding="UTF-8"?>
 <NS xmlns="http://www.iec.ch/61850/2016/NSD"
