@@ -1,0 +1,1 @@
+export declare const sclDocString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SCL version=\"2007\" revision=\"B\" xmlns=\"http://www.iec.ch/61850/2003/SCL\">\n  <DataTypeTemplates></DataTypeTemplates>\n</SCL>";
