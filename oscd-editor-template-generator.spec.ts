@@ -4,12 +4,7 @@ import { restore, SinonSpy, spy } from 'sinon';
 
 import TemplateGenerator from './oscd-editor-template-generator.js';
 import { lNodeSelection } from './oscd-editor-template-generator.testfiles.js';
-import {
-  EditV2,
-  Insert,
-  Transactor,
-  TransactedCallback,
-} from '@omicronenergy/oscd-api';
+import { Insert } from '@omicronenergy/oscd-api';
 
 customElements.define('template-generator', TemplateGenerator);
 
@@ -20,21 +15,14 @@ export const sclDocString = `<?xml version="1.0" encoding="UTF-8"?>
 
 describe('TemplateGenerator', () => {
   let element: TemplateGenerator;
-  let editor: Transactor<EditV2> & { commit: SinonSpy };
+  let editEventListener: SinonSpy;
+  afterEach(restore);
+
   beforeEach(async () => {
-    editor = {
-      commit: spy(),
-      undo: () => undefined,
-      redo: () => undefined,
-      past: [],
-      future: [],
-      subscribe: (txCallback: TransactedCallback<EditV2>) => {
-        return () => txCallback;
-      },
-    };
-    element = await fixture(
-      html`<template-generator .editor=${editor}></template-generator>`,
-    );
+    element = await fixture(html`<template-generator></template-generator>`);
+
+    editEventListener = spy();
+    element.addEventListener('oscd-edit-v2', editEventListener);
   });
 
   it('displays no action button', () =>
@@ -244,9 +232,9 @@ describe('TemplateGenerator', () => {
            - PhyNam
            - Proxy
        */
-      const edits = editor.commit.args[0][0];
-      expect(edits).to.have.lengthOf(5);
-      edits.forEach((edit: Insert) => {
+      const { edit } = editEventListener.args[0][0].detail;
+      expect(edit).to.have.lengthOf(5);
+      edit.forEach((edit: Insert) => {
         expect(edit).to.have.property(
           'parent',
           element.doc?.querySelector('DataTypeTemplates'),
@@ -270,10 +258,10 @@ describe('TemplateGenerator', () => {
       confirmButton.click();
 
       // expect one more call for the DTT section
-      const edits = editor.commit.args[0][0];
-      expect(edits).to.have.lengthOf(6);
-      expect(edits[0]).to.have.property('parent', element.doc?.documentElement);
-      expect(edits[0])
+      const { edit } = editEventListener.args[0][0].detail;
+      expect(edit).to.have.lengthOf(6);
+      expect(edit[0]).to.have.property('parent', element.doc?.documentElement);
+      expect(edit[0])
         .property('node')
         .to.have.property('tagName', 'DataTypeTemplates');
     });
@@ -342,9 +330,9 @@ describe('TemplateGenerator', () => {
                   stVal
                   subVal
        */
-      const edits = editor.commit.args[0][0];
-      expect(edits).to.have.lengthOf(30);
-      const elms = edits.map((edit: { node: Element }) => edit.node);
+      const { edit } = editEventListener.args[0][0].detail;
+      expect(edit).to.have.lengthOf(30);
+      const elms = edit.map((edit: { node: Element }) => edit.node);
       expect(
         elms.filter((e: { tagName: string }) => e.tagName === 'LNodeType'),
       ).to.have.lengthOf(1);
@@ -426,8 +414,8 @@ describe('TemplateGenerator', () => {
       confirmButton.click();
       await element.updateComplete;
 
-      const inserts = editor.commit.args[0][0];
-      const insertedDOs = inserts.filter(
+      const { edit } = editEventListener.args[0][0].detail;
+      const insertedDOs = edit.filter(
         (insert: Insert) => (insert.node as Element).tagName === 'DOType',
       );
       const expectedIds = [

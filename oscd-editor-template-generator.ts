@@ -27,7 +27,7 @@ import { PreviewDialog } from './components/preview-dialog.js';
 
 import { cdClasses, lnClass74 } from './constants.js';
 import { NodeData, getSelectionByPath, processEnums } from './foundation.js';
-import { EditV2, Transactor } from '@omicronenergy/oscd-api';
+import { newEditEventV2 } from '@omicronenergy/oscd-api/utils.js';
 
 let lastLNodeType = 'LPHD';
 let lastSelection = {};
@@ -49,9 +49,6 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     'description-dialog': DescriptionDialog,
     'preview-dialog': PreviewDialog,
   };
-
-  @property({ type: Object })
-  editor!: Transactor<EditV2>;
 
   @property({ attribute: false })
   doc?: XMLDocument;
@@ -158,8 +155,7 @@ export default class TemplateGenerator extends ScopedElementsMixin(LitElement) {
     if (newLNodeType) {
       this.addedLNode = newLNodeType.getAttribute('id') ?? '';
     }
-
-    this.editor.commit(inserts);
+    this.dispatchEvent(newEditEventV2(inserts));
   }
 
   async reset() {
