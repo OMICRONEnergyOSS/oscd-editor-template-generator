@@ -59100,6 +59100,14 @@ const lnClass74 = [
     'ZTCR',
 ];
 
+function newEditEventV2(edit, options) {
+    return new CustomEvent('oscd-edit-v2', {
+        composed: true,
+        bubbles: true,
+        detail: { ...options, edit },
+    });
+}
+
 let lastLNodeType = 'LPHD';
 let lastSelection = {};
 let lastFilter = '';
@@ -59188,7 +59196,7 @@ class TemplateGenerator extends ScopedElementsMixin(i$3) {
         if (newLNodeType) {
             this.addedLNode = newLNodeType.getAttribute('id') ?? '';
         }
-        this.editor.commit(inserts);
+        this.dispatchEvent(newEditEventV2(inserts));
     }
     async reset() {
         this.addedLNode = '';
@@ -59371,9 +59379,6 @@ TemplateGenerator.styles = i$6 `
       gap: 12px;
     }
   `;
-__decorate$1([
-    n$5({ type: Object })
-], TemplateGenerator.prototype, "editor", void 0);
 __decorate$1([
     n$5({ attribute: false })
 ], TemplateGenerator.prototype, "doc", void 0);

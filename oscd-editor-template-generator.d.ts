@@ -12,7 +12,6 @@ import { Snackbar } from './components/snackbar.js';
 import { CreateDataObjectDialog } from './components/create-do-dialog.js';
 import { DescriptionDialog } from './components/description-dialog.js';
 import { PreviewDialog } from './components/preview-dialog.js';
-import { EditV2, Transactor } from '@omicronenergy/oscd-api';
 declare const TemplateGenerator_base: typeof LitElement & import("@open-wc/scoped-elements/lit-element.js").ScopedElementsHostConstructor;
 export default class TemplateGenerator extends TemplateGenerator_base {
     static scopedElements: {
@@ -30,7 +29,6 @@ export default class TemplateGenerator extends TemplateGenerator_base {
         'description-dialog': typeof DescriptionDialog;
         'preview-dialog': typeof PreviewDialog;
     };
-    editor: Transactor<EditV2>;
     doc?: XMLDocument;
     treeUI: TreeGrid;
     lNodeTypeUI?: MdFilledSelect;
